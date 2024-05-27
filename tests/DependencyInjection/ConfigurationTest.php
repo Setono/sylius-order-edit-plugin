@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Acme\SyliusExamplePlugin\Tests\DependencyInjection;
+namespace Setono\SyliusOrderEditPlugin\Tests\DependencyInjection;
 
-use Acme\SyliusExamplePlugin\DependencyInjection\Configuration;
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
 use PHPUnit\Framework\TestCase;
+use Setono\SyliusOrderEditPlugin\DependencyInjection\Configuration;
 
 /**
  * See examples of tests and configuration options here: https://github.com/SymfonyTest/SymfonyConfigTest
@@ -29,7 +29,7 @@ final class ConfigurationTest extends TestCase
             [
                 [], // no values at all
             ],
-            '/The child (config|node) "option" (under|at path) "acme_sylius_example" must be configured/',
+            '/The child (config|node) "option" (under|at path) "setono_sylius_order_edit" must be configured/',
             true,
         );
     }
