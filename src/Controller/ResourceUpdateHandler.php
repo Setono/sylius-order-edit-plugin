@@ -70,7 +70,7 @@ final class ResourceUpdateHandler implements ResourceUpdateHandlerInterface, Eve
         ObjectManager $manager,
     ): void {
         // This handler will only handle orders updated through the admin interface
-        $route = $requestConfiguration->getRequest()->attributes->getString('_route');
+        $route = $requestConfiguration->getRequest()->attributes->get('_route');
         if ('sylius_admin_order_update' !== $route) {
             $this->decorated->handle($resource, $requestConfiguration, $manager);
 
@@ -102,10 +102,7 @@ final class ResourceUpdateHandler implements ResourceUpdateHandlerInterface, Eve
             $requestConfiguration->getParameters()->remove('state_machine');
         } catch (\Throwable $e) {
             // todo save the exception message in the flashbag under a namespace to be able to output it in the form
-            throw new UpdateHandlingException(
-                message: $e->getMessage(),
-                previous: $e,
-            );
+            throw new UpdateHandlingException($e->getMessage());
         }
 
         $this->decorated->handle($resource, $requestConfiguration, $manager);
