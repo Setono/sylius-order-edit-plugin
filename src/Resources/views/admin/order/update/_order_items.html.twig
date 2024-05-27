@@ -1,0 +1,31 @@
+{% import "@SyliusShop/Common/Macro/money.html.twig" as money %}
+
+{# @var order \Sylius\Component\Core\Model\OrderInterface #}
+{% set order = form.vars.data %}
+
+<div class="ui segment">
+    <h4 class="ui dividing header">{{ 'setono_sylius_order_edit.ui.order_items'|trans }}</h4>
+    <table class="ui table">
+        <thead>
+            <tr>
+                <th>{{ 'sylius.ui.quantity'|trans }}</th>
+                <th>{{ 'sylius.ui.product'|trans }}</th>
+                <th>{{ 'sylius.ui.unit_price'|trans }}</th>
+                <th>{{ 'sylius.ui.total'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# @var itemForm \Symfony\Component\Form\FormView #}
+            {% for itemForm in form.items %}
+                {# @var orderItem \Sylius\Component\Core\Model\OrderItemInterface #}
+                {% set orderItem = itemForm.vars.data %}
+                <tr>
+                    <td>{{ form_row(itemForm.quantity) }}</td>
+                    <td>{{ orderItem.productName }}</td> {# todo add variant #}
+                    <td>{{ money.format(orderItem.unitPrice, order.currencyCode) }}</td>
+                    <td>{{ money.format(orderItem.total, order.currencyCode) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

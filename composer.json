@@ -34,6 +34,7 @@
         "symfony/serializer": "^5.4 || ^6.4 || ^7.0",
         "symfony/web-profiler-bundle": "^5.4 || ^6.4 || ^7.0",
         "symfony/webpack-encore-bundle": "^1.17.2",
+        "symfony/workflow": "^6.4",
         "willdurand/negotiation": "^3.1"
     },
     "prefer-stable": true,

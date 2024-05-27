@@ -1,0 +1,3 @@
+setono_sylius_order_edit:
+    ui:
+        order_items: Order items

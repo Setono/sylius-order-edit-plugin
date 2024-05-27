@@ -10,7 +10,9 @@ Edit orders inside your admin interface.
 
 ## Install
 
-TODO
+**NOTICE** Right now this plugin only works if you use the Winzou State Machine Bundle as your Sylius state machine.
+You can check this by running `php bin/console debug:container sylius.resource_controller.state_machine`.
+The `class` should be `Sylius\Bundle\ResourceBundle\Controller\StateMachine`.
 
 ## Usage
 
