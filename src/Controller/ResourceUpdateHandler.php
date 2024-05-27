@@ -48,7 +48,14 @@ final class ResourceUpdateHandler implements ResourceUpdateHandlerInterface, Eve
 
         /** @var OrderItemInterface $item */
         foreach ($order->getItems() as $item) {
-            $this->quantities[$item->getVariant()?->getCode()] = $item->getQuantity();
+            $variant = $item->getVariant();
+            Assert::notNull($variant);
+
+            if (!$variant->isTracked()) {
+                continue;
+            }
+
+            $this->quantities[(string) $variant->getCode()] = $item->getQuantity();
         }
     }
 
@@ -64,7 +71,7 @@ final class ResourceUpdateHandler implements ResourceUpdateHandlerInterface, Eve
     ): void {
         // This handler will only handle orders updated through the admin interface
         $route = $requestConfiguration->getRequest()->attributes->getString('_route');
-        if ($route !== 'sylius_admin_order_update') {
+        if ('sylius_admin_order_update' !== $route) {
             $this->decorated->handle($resource, $requestConfiguration, $manager);
 
             return;
@@ -94,6 +101,7 @@ final class ResourceUpdateHandler implements ResourceUpdateHandlerInterface, Eve
 
             $requestConfiguration->getParameters()->remove('state_machine');
         } catch (\Throwable $e) {
+            // todo save the exception message in the flashbag under a namespace to be able to output it in the form
             throw new UpdateHandlingException(
                 message: $e->getMessage(),
                 previous: $e,
@@ -109,12 +117,8 @@ final class ResourceUpdateHandler implements ResourceUpdateHandlerInterface, Eve
     private function giveBack(): void
     {
         foreach ($this->quantities as $code => $quantity) {
-            $variant = $this->productVariantRepository->findOneBy(['code' => $code]);
+            $variant = $this->productVariantRepository->findOneBy(['code' => $code, 'tracked' => true]);
             if (!$variant instanceof ProductVariantInterface) {
-                continue;
-            }
-
-            if (!$variant->isTracked()) {
                 continue;
             }
 

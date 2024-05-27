@@ -33,6 +33,23 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
                         'to' => 'cart',
                     ],
                 ],
+                'callbacks' => [
+                    'after' => [
+                        'setono_sylius_order_edit.edit_shipping' => [
+                            'on' => ['edit'],
+                            'do' => ['@sm.callback.cascade_transition', 'apply'],
+                            'args' => ['object', 'event', "'edit'", "'sylius_order_shipping'"],
+                        ],
+                    ],
+                ],
+            ],
+            'sylius_order_shipping' => [
+                'transitions' => [
+                    'edit' => [
+                        'from' => ['ready'],
+                        'to' => 'cart',
+                    ],
+                ],
             ],
         ]);
     }
