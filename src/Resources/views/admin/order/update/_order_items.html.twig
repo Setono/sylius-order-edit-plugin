@@ -10,8 +10,9 @@
             <tr>
                 <th>{{ 'sylius.ui.quantity'|trans }}</th>
                 <th>{{ 'sylius.ui.product'|trans }}</th>
-                <th>{{ 'sylius.ui.unit_price'|trans }}</th>
-                <th>{{ 'sylius.ui.total'|trans }}</th>
+                <th class="right aligned">{{ 'sylius.ui.unit_price'|trans }}</th>
+                <th class="right aligned">{{ 'sylius.ui.total'|trans }}</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
@@ -22,10 +23,24 @@
                 <tr>
                     <td>{{ form_row(itemForm.quantity) }}</td>
                     <td>{{ orderItem.productName }}</td> {# todo add variant #}
-                    <td>{{ money.format(orderItem.unitPrice, order.currencyCode) }}</td>
-                    <td>{{ money.format(orderItem.total, order.currencyCode) }}</td>
+                    <td class="right aligned">{{ money.format(orderItem.unitPrice, order.currencyCode) }}</td>
+                    <td class="right aligned">{{ money.format(orderItem.total, order.currencyCode) }}</td>
+                    <td class="right aligned">
+                        <button class="ui red labeled icon button delete-order-line" type="button">
+                            <i class="icon trash"></i> {{ 'sylius.ui.delete'|trans }}
+                        </button>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    <button class="ui teal labeled icon button add-order-line" type="button">
+                        <i class="icon plus"></i> {{ 'sylius.ui.add'|trans }}
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>

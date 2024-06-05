@@ -52,5 +52,17 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
                 ],
             ],
         ]);
+
+        $container->prependExtensionConfig('sylius_ui', [
+            'events' => [
+                'sylius.admin.order.update.content' => [
+                    'blocks' => [
+                        'javascripts' => [
+                            'template' => '@SetonoSyliusOrderEditPlugin/admin/order/update/_javascripts.html.twig',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
     }
 }
