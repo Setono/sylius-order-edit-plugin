@@ -5,7 +5,7 @@
 
 <div class="ui segment">
     <h4 class="ui dividing header">{{ 'setono_sylius_order_edit.ui.order_items'|trans }}</h4>
-    <table class="ui table">
+    <table class="ui table" data-prototype="{{ form_widget(form.items.vars.prototype)|e('html_attr') }}">
         <thead>
             <tr>
                 <th>{{ 'sylius.ui.quantity'|trans }}</th>
@@ -26,7 +26,7 @@
                     <td class="right aligned">{{ money.format(orderItem.unitPrice, order.currencyCode) }}</td>
                     <td class="right aligned">{{ money.format(orderItem.total, order.currencyCode) }}</td>
                     <td class="right aligned">
-                        <button class="ui red labeled icon button delete-order-line" type="button">
+                        <button class="ui red labeled icon button delete-order-item" type="button">
                             <i class="icon trash"></i> {{ 'sylius.ui.delete'|trans }}
                         </button>
                     </td>
