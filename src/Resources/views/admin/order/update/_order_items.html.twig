@@ -3,9 +3,15 @@
 {# @var order \Sylius\Component\Core\Model\OrderInterface #}
 {% set order = form.vars.data %}
 
+{% form_theme form '@SetonoSyliusOrderEditPlugin/admin/order/update/theme.html.twig' %}
+
 <div class="ui segment">
     <h4 class="ui dividing header">{{ 'setono_sylius_order_edit.ui.order_items'|trans }}</h4>
-    <table class="ui table" data-prototype="{{ form_widget(form.items.vars.prototype)|e('html_attr') }}">
+    <table
+        class="ui table"
+        data-prototype="{{ form_widget(form.items.vars.prototype)|e('html_attr') }}"
+        data-index="{{ form.items|length > 0 ? form.items|last.vars.name + 1 : 0 }}"
+    >
         <thead>
             <tr>
                 <th>{{ 'sylius.ui.quantity'|trans }}</th>
@@ -36,7 +42,7 @@
         <tfoot>
             <tr>
                 <td>
-                    <button class="ui teal labeled icon button add-order-line" type="button">
+                    <button class="ui teal labeled icon button add-order-item" type="button">
                         <i class="icon plus"></i> {{ 'sylius.ui.add'|trans }}
                     </button>
                 </td>

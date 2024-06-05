@@ -8,8 +8,8 @@ use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\Component\Order\Modifier\OrderItemQuantityModifierInterface;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
 
 final class OrderItemType extends AbstractResourceType
 {
@@ -28,9 +28,9 @@ final class OrderItemType extends AbstractResourceType
     {
         $builder->add('quantity', IntegerType::class, [
             'label' => false,
-            'setter' => function (OrderItemInterface &$orderItem, int $quantity, FormInterface $form): void {
+            'setter' => function (OrderItemInterface &$orderItem, int $quantity): void {
                 $this->orderItemQuantityModifier->modify($orderItem, $quantity);
             },
-        ]);
+        ])->add('variant', TextType::class);
     }
 }
