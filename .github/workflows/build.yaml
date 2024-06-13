@@ -78,7 +78,7 @@ jobs:
                 dependencies:
                     - "lowest"
                     - "highest"
-                
+
                 symfony:
                     - "~5.4.0"
                     - "~6.4.0"
@@ -97,7 +97,7 @@ jobs:
 
             -   name: "Remove require-dev section in composer.json"
                 run: "composer config --unset require-dev"
-            
+
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v3"
                 env:
@@ -110,7 +110,7 @@ jobs:
 
             -   name: "Run composer-unused/composer-unused"
                 run: "composer-unused"
-    
+
     static-code-analysis:
         name: "Static Code Analysis (PHP${{ matrix.php-version }} | Deps: ${{ matrix.dependencies }} | SF${{ matrix.symfony }})"
 
@@ -144,7 +144,7 @@ jobs:
 
             -   name: "Remove sylius/sylius from composer.json"
                 run: "composer remove --dev --no-update --no-plugins --no-scripts sylius/sylius"
-            
+
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v3"
                 env:
@@ -165,7 +165,7 @@ jobs:
                 php-version:
                     - "8.1"
                     - "8.2"
-                
+
                 dependencies:
                     - "lowest"
                     - "highest"
@@ -210,7 +210,7 @@ jobs:
                 dependencies:
                     - "lowest"
                     - "highest"
-                
+
                 symfony:
                     - "~5.4.0"
                     - "~6.4.0"
@@ -248,7 +248,13 @@ jobs:
 
             -   name: "Validate Doctrine mapping"
                 run: "(cd tests/Application && bin/console doctrine:schema:validate -vvv)" # The verbose flag will show 'missing' SQL statements, if any
-    
+
+            -   name: "Load fixtures for functional tests"
+                run: "(cd tests/Application && bin/console doctrine:fixtures:load --no-interaction)"
+
+            -   name: "Run phpunit"
+                run: "vendor/bin/phpunit tests/Functional/"
+
     mutation-tests:
         name: "Mutation tests"
 
@@ -282,7 +288,7 @@ jobs:
                 run: "vendor/bin/infection"
                 env:
                     STRYKER_DASHBOARD_API_KEY: "${{ secrets.STRYKER_DASHBOARD_API_KEY }}"
-    
+
     code-coverage:
         name: "Code Coverage (PHP${{ matrix.php-version }} | Deps: ${{ matrix.dependencies }})"
 
