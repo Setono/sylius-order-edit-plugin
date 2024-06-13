@@ -82,6 +82,7 @@
         "analyse": "psalm",
         "check-style": "ecs check",
         "fix-style": "ecs check --fix",
-        "phpunit": "phpunit"
+        "unit-tests": "vendor/bin/phpunit tests/Unit/",
+        "functional-tests": "vendor/bin/phpunit tests/Functional/"
     }
 }

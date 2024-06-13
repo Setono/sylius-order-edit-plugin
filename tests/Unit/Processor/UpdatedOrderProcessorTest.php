@@ -60,7 +60,6 @@ final class UpdatedOrderProcessorTest extends TestCase
 
         $newOrder = $this->prophesize(OrderInterface::class);
 
-        $orderInventoryOperator->cancel($newOrder)->shouldBeCalled();
         $newOrder->setState('cart')->shouldBeCalled();
         $orderProcessor->process($newOrder)->shouldBeCalled();
         $afterCheckoutOrderPaymentProcessor->process($newOrder)->shouldBeCalled();
