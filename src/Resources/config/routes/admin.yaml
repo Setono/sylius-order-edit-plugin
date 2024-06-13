@@ -1,1 +1,5 @@
-# TODO Add your admin routes here
+setono_sylius_order_edit_admin_update:
+    path: /orders/{id}/update-and-processs
+    methods: [POST, PUT, PATCH]
+    defaults:
+        _controller: Setono\SyliusOrderEditPlugin\Controller\EditOrderAction

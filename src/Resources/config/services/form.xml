@@ -15,8 +15,6 @@
         <!-- Form type extensions -->
         <service id="setono_sylius_order_edit.form.extension.order"
                  class="Setono\SyliusOrderEditPlugin\Form\Extension\OrderTypeExtension">
-            <argument type="service" id="sylius.resource_controller.resource_update_handler"/>
-
             <tag name="form.type_extension"/>
         </service>
     </services>

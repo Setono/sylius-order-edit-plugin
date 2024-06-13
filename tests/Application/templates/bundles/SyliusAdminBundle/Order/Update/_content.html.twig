@@ -1,6 +1,6 @@
 {% form_theme form '@SyliusAdmin/Form/theme.html.twig' %}
 
-{{ form_start(form, {'action': path('sylius_admin_order_update', {'id': order.id}), 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'action': path('setono_sylius_order_edit_admin_update', {'id': order.id}), 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
 <div class="ui segment">
     <input type="hidden" name="_method" value="PUT" />
 

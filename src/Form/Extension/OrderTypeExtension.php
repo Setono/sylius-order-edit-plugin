@@ -12,14 +12,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 final class OrderTypeExtension extends AbstractTypeExtension
 {
-    public function __construct(private readonly EventSubscriberInterface $resourceUpdateHandler)
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('items', OrderItemCollectionType::class);
-        $builder->addEventSubscriber($this->resourceUpdateHandler);
     }
 
     public static function getExtendedTypes(): \Generator

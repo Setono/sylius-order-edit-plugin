@@ -28,7 +28,7 @@
                 {% set orderItem = itemForm.vars.data %}
                 <tr>
                     <td>{{ form_row(itemForm.quantity) }}</td>
-                    <td>{{ orderItem.productName }}</td> {# todo add variant #}
+                    <td>{{ form_widget(itemForm.variant) }}</td>
                     <td class="right aligned">{{ money.format(orderItem.unitPrice, order.currencyCode) }}</td>
                     <td class="right aligned">{{ money.format(orderItem.total, order.currencyCode) }}</td>
                     <td class="right aligned">
