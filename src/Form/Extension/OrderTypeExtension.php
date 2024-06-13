@@ -6,7 +6,6 @@ namespace Setono\SyliusOrderEditPlugin\Form\Extension;
 
 use Setono\SyliusOrderEditPlugin\Form\Type\OrderItemCollectionType;
 use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 

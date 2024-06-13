@@ -36,6 +36,7 @@ final class OrderUpdateTest extends WebTestCase
         $this->makeVariantTrackedWithStock();
         $order = $this->placeOrderProgramatically(quantity: 5);
 
+        /** @var ProductVariantInterface $variant */
         $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
         $initialHold = $variant->getOnHold();
 
@@ -50,11 +51,11 @@ final class OrderUpdateTest extends WebTestCase
 
         self::$client->request(
             'PATCH',
-            sprintf('/admin/orders/%d/update-and-processs', $order->getId()),
+            sprintf('/admin/orders/%d/update-and-processs', (int) $order->getId()),
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            $content
+            $content,
         );
 
         self::assertResponseStatusCodeSame(302);
@@ -68,7 +69,7 @@ final class OrderUpdateTest extends WebTestCase
 
     private function placeOrderProgramatically(
         string $variantCode = '000F_office_grey_jeans-variant-0',
-        int $quantity = 1
+        int $quantity = 1,
     ): Order {
         /** @var MessageBusInterface $commandBus */
         $commandBus = self::getContainer()->get('sylius.command_bus');

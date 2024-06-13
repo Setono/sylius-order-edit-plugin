@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EditOrderAction
@@ -59,7 +60,9 @@ final class EditOrderAction
         int $orderId,
     ): RedirectResponse {
         $session = $this->requestStack->getSession();
-        $session->getBag('flashes')->add($type, $message);
+        /** @var FlashBagInterface $flashBag */
+        $flashBag = $session->getBag('flashes');
+        $flashBag->add($type, $message);
 
         return new RedirectResponse($this->router->generate($route, ['id' => $orderId]));
     }

@@ -8,6 +8,7 @@ use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
 use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Webmozart\Assert\Assert;
 
 final class UpdatedOrderProvider
 {
@@ -20,6 +21,9 @@ final class UpdatedOrderProvider
         $form = $this->formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius']);
         $form->handleRequest($request);
 
-        return $form->getData();
+        $data = $form->getData();
+        Assert::isInstanceOf($data, OrderInterface::class);
+
+        return $data;
     }
 }

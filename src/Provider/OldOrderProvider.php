@@ -19,8 +19,9 @@ final class OldOrderProvider
 
     public function provide(int $orderId): OrderInterface
     {
+        /** @var OrderInterface|null $order */
         $order = $this->orderRepository->find($orderId);
-        Assert::notNull($order);
+        Assert::isInstanceOf($order, OrderInterface::class);
 
         $this->orderInventoryOperator->cancel($order);
 
