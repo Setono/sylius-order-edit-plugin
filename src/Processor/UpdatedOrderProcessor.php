@@ -17,19 +17,14 @@ final class UpdatedOrderProcessor implements UpdatedOrderProcessorInterface
     ) {
     }
 
-    public function process(OrderInterface $newOrder): OrderInterface
+    public function process(OrderInterface $updatedOrder): OrderInterface
     {
-        $newOrder->setState(OrderInterface::STATE_CART);
-        $this->orderProcessor->process($newOrder);
-        $this->afterCheckoutOrderPaymentProcessor->process($newOrder);
-        $newOrder->setState(OrderInterface::STATE_NEW);
-        $this->orderInventoryOperator->hold($newOrder);
+        $updatedOrder->setState(OrderInterface::STATE_CART);
+        $this->orderProcessor->process($updatedOrder);
+        $this->afterCheckoutOrderPaymentProcessor->process($updatedOrder);
+        $updatedOrder->setState(OrderInterface::STATE_NEW);
+        $this->orderInventoryOperator->hold($updatedOrder);
 
-        return $newOrder;
-//        if ($initialTotal < $newOrder->getTotal()) {
-//            throw new NewOrderWrongTotalException();
-//        }
-//
-//        $this->entityManager->flush();
+        return $updatedOrder;
     }
 }

@@ -48,7 +48,7 @@ final class EditOrderAction
                 'sylius_admin_order_update',
                 $id,
             );
-        } catch (\Exception) {
+        } catch (\Throwable) {
             return $this->addFlashAndRedirect(
                 'error',
                 'setono_sylius_order_edit.order_update.general_error',
