@@ -134,16 +134,20 @@ final class OrderUpdateTest extends WebTestCase
 
     private function updateOrder(int $orderId): void
     {
-        $crawler = static::$client->request('GET', sprintf('/admin/orders/%d/edit', $orderId));
-        $form = $crawler->selectButton('Save changes')->form([
-            'sylius_order' => [
-                'items' => [
-                    ['quantity' => 3],
+        static::$client->request(
+            'PATCH',
+            sprintf('/admin/orders/%d/update-and-process', $orderId),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'sylius_order' => [
+                    'items' => [
+                        ['quantity' => 3],
+                    ],
                 ],
-            ],
-        ]);
-
-        static::$client->submit($form);
+            ]),
+        );
     }
 
     private function getOrderRepository(): OrderRepositoryInterface

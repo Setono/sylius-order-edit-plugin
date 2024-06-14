@@ -1,5 +1,5 @@
 setono_sylius_order_edit_admin_update:
-    path: /orders/{id}/update-and-processs
+    path: /orders/{id}/update-and-process
     methods: [POST, PUT, PATCH]
     defaults:
         _controller: setono_sylius_order_edit.controller.edit_order

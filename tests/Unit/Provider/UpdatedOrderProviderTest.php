@@ -28,7 +28,7 @@ final class UpdatedOrderProviderTest extends TestCase
         $newOrder = new Order();
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius'])->willReturn($form);
+        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(true);
@@ -48,7 +48,7 @@ final class UpdatedOrderProviderTest extends TestCase
         $order = new Order();
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius'])->willReturn($form);
+        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(false);
@@ -67,7 +67,7 @@ final class UpdatedOrderProviderTest extends TestCase
         $order = new Order();
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius'])->willReturn($form);
+        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(true);
@@ -87,7 +87,7 @@ final class UpdatedOrderProviderTest extends TestCase
         $order = new Order();
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius'])->willReturn($form);
+        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(true);
