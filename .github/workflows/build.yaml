@@ -208,7 +208,6 @@ jobs:
                     - "8.2"
 
                 dependencies:
-                    - "lowest"
                     - "highest"
 
                 symfony:
@@ -321,6 +320,9 @@ jobs:
                     - "highest"
 
         steps:
+            -   name: "Start MySQL"
+                run: "sudo /etc/init.d/mysql start"
+
             -   name: "Checkout"
                 uses: "actions/checkout@v4"
 
@@ -339,8 +341,20 @@ jobs:
                 with:
                     dependency-versions: "${{ matrix.dependencies }}"
 
+            -   name: "Create database"
+                run: "(cd tests/Application && bin/console doctrine:database:create)"
+
+            -   name: "Create database schema"
+                run: "(cd tests/Application && bin/console doctrine:schema:create)"
+
+            -   name: "Load fixtures for functional tests"
+                run: "(cd tests/Application && bin/console sylius:fixtures:load --no-interaction)"
+
+            -   name: "Run yarn"
+                run: "(cd tests/Application && yarn install && yarn build)"
+
             -   name: "Collect code coverage with pcov and phpunit/phpunit"
-                run: "vendor/bin/phpunit tests/Unit/ --coverage-clover=.build/logs/clover.xml"
+                run: "vendor/bin/phpunit --coverage-clover=.build/logs/clover.xml"
 
             -   name: "Send code coverage report to Codecov.io"
                 uses: "codecov/codecov-action@v3"
