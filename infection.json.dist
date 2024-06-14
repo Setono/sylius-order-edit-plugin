@@ -2,6 +2,13 @@
     "source": {
         "directories": [
             "src"
+        ],
+        "excludes": [
+            "Controller",
+            "DependencyInjection/SetonoSyliusOrderEditExtension.php",
+            "Exception",
+            "EventSubscriber",
+            "Form"
         ]
     },
     "logs": {
@@ -12,5 +19,6 @@
         }
     },
     "minMsi": 100.00,
-    "minCoveredMsi": 100.00
+    "minCoveredMsi": 100.00,
+    "testFrameworkOptions": "--testsuite=unit"
 }
