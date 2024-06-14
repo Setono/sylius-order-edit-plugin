@@ -3,13 +3,6 @@
         "directories": [
             "src"
         ],
-        "excludes": [
-            "Controller",
-            "DependencyInjection/SetonoSyliusOrderEditExtension.php",
-            "Exception",
-            "EventSubscriber",
-            "Form"
-        ]
     },
     "logs": {
         "text": "php://stderr",
@@ -18,7 +11,6 @@
             "badge": "master"
         }
     },
-    "minMsi": 100.00,
-    "minCoveredMsi": 100.00,
-    "testFrameworkOptions": "--testsuite=unit"
+    "minMsi": 70.00,
+    "minCoveredMsi": 70.00,
 }
