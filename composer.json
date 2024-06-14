@@ -54,6 +54,7 @@
         "willdurand/negotiation": "^3.1"
     },
     "conflict": {
+        "doctrine/annotations": "<1.13.2",
         "doctrine/data-fixtures": "<1.5.1"
     },
     "prefer-stable": true,
