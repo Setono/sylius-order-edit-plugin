@@ -1,6 +1,3 @@
 sylius_admin:
     resource: "@SyliusAdminBundle/Resources/config/routing.yml"
     prefix: '/%sylius_admin.path_name%'
-
-setono_edit_order:
-    resource: "@SetonoSyliusOrderEditPlugin/Resources/config/routes.yaml"

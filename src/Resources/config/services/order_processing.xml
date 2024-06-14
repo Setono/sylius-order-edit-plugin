@@ -9,20 +9,33 @@
             <argument type="service" id="request_stack"/>
         </service>
 
-        <service id="Setono\SyliusOrderEditPlugin\Provider\OldOrderProvider">
+        <service
+            id="setono_sylius_order_edit.checker.post_update_changes_checker"
+            class="\Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesChecker"
+        />
+
+        <service
+            id="setono_sylius_order_edit.preparer.order_preparer"
+            class="Setono\SyliusOrderEditPlugin\Preparer\OrderPreparer"
+        >
             <argument type="service" id="sylius.repository.order" />
             <argument type="service" id="sylius.inventory.order_inventory_operator" />
         </service>
 
-        <service id="Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProvider">
+        <service
+            id="setono_sylius_order_edit.provider.updated_order_provider"
+            class="Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProvider"
+        >
             <argument type="service" id="form.factory" />
         </service>
 
-        <service id="Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessor">
+        <service
+            id="setono_sylius_order_edit.processor.updated_order_processor"
+            class="Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessor"
+        >
             <argument type="service" id="sylius.order_processing.order_processor" />
             <argument type="service" id="sylius.inventory.order_inventory_operator" />
             <argument type="service" id="sylius.order_processing.order_payment_processor.after_checkout" />
-            <argument type="service" id="sylius.manager.order" />
         </service>
     </services>
 </container>

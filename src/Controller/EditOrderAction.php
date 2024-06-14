@@ -4,52 +4,64 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
 use Setono\SyliusOrderEditPlugin\Exception\NewOrderWrongTotalException;
-use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessor;
-use Setono\SyliusOrderEditPlugin\Provider\OldOrderProvider;
-use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProvider;
+use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
+use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
+use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EditOrderAction
 {
     public function __construct(
-        private OldOrderProvider $oldOrderProvider,
-        private UrlGeneratorInterface $router,
-        private RequestStack $requestStack,
-        private UpdatedOrderProvider $updatedOrderProvider,
-        private UpdatedOrderProcessor $updatedOrderProcessor,
+        private readonly OrderPreparerInterface $oldOrderProvider,
+        private readonly UpdatedOrderProviderInterface $updatedOrderProvider,
+        private readonly UpdatedOrderProcessorInterface $updatedOrderProcessor,
+        private readonly PostUpdateChangesCheckerInterface $postUpdateChangesChecker,
+        private readonly UrlGeneratorInterface $router,
+        private readonly RequestStack $requestStack,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, int $id): Response
     {
-        $orderId = (int) $request->attributes->get('id');
-        $order = $this->oldOrderProvider->provide($orderId);
+        $order = $this->oldOrderProvider->prepareToUpdate($id);
 
-        $initialTotal = $order->getTotal();
-        $resource = $this->updatedOrderProvider->fromRequest($order, $request);
+        $oldOrder = clone $order;
+        $updatedOrder = $this->updatedOrderProvider->provideFromOldOrderAndRequest($order, $request);
 
         try {
-            $this->updatedOrderProcessor->process($initialTotal, $resource);
+            $this->updatedOrderProcessor->process($updatedOrder);
+            $this->postUpdateChangesChecker->check($oldOrder, $updatedOrder);
+            $this->entityManager->flush();
         } catch (NewOrderWrongTotalException) {
             return $this->addFlashAndRedirect(
                 'error',
-                'setono_sylius_order_edit.error.order_update',
+                'setono_sylius_order_edit.order_update.total_error',
                 'sylius_admin_order_update',
-                $orderId,
+                $id,
+            );
+        } catch (\Exception) {
+            return $this->addFlashAndRedirect(
+                'error',
+                'setono_sylius_order_edit.order_update.general_error',
+                'sylius_admin_order_update',
+                $id,
             );
         }
 
         return $this->addFlashAndRedirect(
             'success',
-            'setono_sylius_order_edit.success.order_update',
+            'setono_sylius_order_edit.order_update.success',
             'sylius_admin_order_show',
-            $orderId,
+            $id,
         );
     }
 
@@ -60,9 +72,10 @@ final class EditOrderAction
         int $orderId,
     ): RedirectResponse {
         $session = $this->requestStack->getSession();
-        /** @var FlashBagInterface $flashBag */
-        $flashBag = $session->getBag('flashes');
-        $flashBag->add($type, $message);
+
+        if ($session instanceof Session) {
+            $session->getFlashBag()->add($type, $message);
+        }
 
         return new RedirectResponse($this->router->generate($route, ['id' => $orderId]));
     }

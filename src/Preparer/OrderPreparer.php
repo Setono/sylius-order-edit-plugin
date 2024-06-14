@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusOrderEditPlugin\Provider;
+namespace Setono\SyliusOrderEditPlugin\Preparer;
 
 use Sylius\Component\Core\Inventory\Operator\OrderInventoryOperatorInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Webmozart\Assert\Assert;
 
-final class OldOrderProvider
+final class OrderPreparer implements OrderPreparerInterface
 {
     public function __construct(
-        private OrderRepositoryInterface $orderRepository,
-        private OrderInventoryOperatorInterface $orderInventoryOperator,
+        private readonly OrderRepositoryInterface $orderRepository,
+        private readonly OrderInventoryOperatorInterface $orderInventoryOperator,
     ) {
     }
 
-    public function provide(int $orderId): OrderInterface
+    public function prepareToUpdate(int $orderId): OrderInterface
     {
         /** @var OrderInterface|null $order */
         $order = $this->orderRepository->find($orderId);

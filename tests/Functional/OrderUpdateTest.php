@@ -41,22 +41,7 @@ final class OrderUpdateTest extends WebTestCase
         $initialHold = $variant->getOnHold();
 
         $this->loginAsAdmin();
-
-        $content = json_encode(['sylius_order' => ['items' => [
-            [
-                'variant' => '000F_office_grey_jeans-variant-0',
-                'quantity' => 3,
-            ],
-        ]]]);
-
-        self::$client->request(
-            'PATCH',
-            sprintf('/admin/orders/%d/update-and-processs', (int) $order->getId()),
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content,
-        );
+        $this->updateOrder($order->getId());
 
         self::assertResponseStatusCodeSame(302);
 
@@ -123,6 +108,7 @@ final class OrderUpdateTest extends WebTestCase
         $variant = $variantRepository->findOneBy(['code' => $code]);
         $variant->setTracked(true);
         $variant->setOnHand($stock);
+        $variant->getOnHold(0);
 
         self::getContainer()->get('sylius.manager.product_variant')->flush();
     }
@@ -141,6 +127,20 @@ final class OrderUpdateTest extends WebTestCase
         $form = $crawler->selectButton('Login')->form([
             '_username' => 'sylius@example.com',
             '_password' => 'sylius',
+        ]);
+
+        static::$client->submit($form);
+    }
+
+    private function updateOrder(int $orderId): void
+    {
+        $crawler = static::$client->request('GET', sprintf('/admin/orders/%d/edit', $orderId));
+        $form = $crawler->selectButton('Save changes')->form([
+            'sylius_order' => [
+                'items' => [
+                    ['quantity' => 3],
+                ],
+            ],
         ]);
 
         static::$client->submit($form);

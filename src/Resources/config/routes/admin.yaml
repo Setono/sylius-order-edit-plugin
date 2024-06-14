@@ -2,4 +2,6 @@ setono_sylius_order_edit_admin_update:
     path: /orders/{id}/update-and-processs
     methods: [POST, PUT, PATCH]
     defaults:
-        _controller: Setono\SyliusOrderEditPlugin\Controller\EditOrderAction
+        _controller: setono_sylius_order_edit.controller.edit_order
+    requirements:
+        id: '\d+'

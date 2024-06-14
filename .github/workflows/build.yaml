@@ -272,6 +272,9 @@ jobs:
                     - "highest"
 
         steps:
+            -   name: "Start MySQL"
+                run: "sudo /etc/init.d/mysql start"
+
             -   name: "Checkout"
                 uses: "actions/checkout@v4"
 
@@ -325,7 +328,7 @@ jobs:
                     dependency-versions: "${{ matrix.dependencies }}"
 
             -   name: "Collect code coverage with pcov and phpunit/phpunit"
-                run: "vendor/bin/phpunit --coverage-clover=.build/logs/clover.xml"
+                run: "vendor/bin/phpunit tests/Unit/ --coverage-clover=.build/logs/clover.xml"
 
             -   name: "Send code coverage report to Codecov.io"
                 uses: "codecov/codecov-action@v3"

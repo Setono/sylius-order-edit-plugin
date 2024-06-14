@@ -1,5 +1,5 @@
 setono_sylius_order_edit:
-    error:
-        order_update: 'Order should not have bigger total than before editing'
-    success:
-        order_update: 'Order has been successfully updated'
+    order_update:
+        general_error: 'An error occurred while updating the order'
+        total_error: 'Order should not have bigger total than before editing'
+        success: 'Order has been successfully updated'

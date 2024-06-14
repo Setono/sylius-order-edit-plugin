@@ -1,0 +1,2 @@
+setono_sylius_edit_order:
+    resource: "@SetonoSyliusOrderEditPlugin/Resources/config/routes.yaml"

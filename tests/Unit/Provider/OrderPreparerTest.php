@@ -6,12 +6,12 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Provider;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Setono\SyliusOrderEditPlugin\Provider\OldOrderProvider;
+use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparer;
 use Sylius\Component\Core\Inventory\Operator\OrderInventoryOperatorInterface;
 use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 
-final class OldOrderProviderTest extends TestCase
+final class OrderPreparerTest extends TestCase
 {
     use ProphecyTrait;
 
@@ -20,7 +20,7 @@ final class OldOrderProviderTest extends TestCase
         $orderRepository = $this->prophesize(OrderRepositoryInterface::class);
         $inventoryOperator = $this->prophesize(OrderInventoryOperatorInterface::class);
 
-        $provider = new OldOrderProvider(
+        $provider = new OrderPreparer(
             $orderRepository->reveal(),
             $inventoryOperator->reveal(),
         );
@@ -29,7 +29,7 @@ final class OldOrderProviderTest extends TestCase
         $orderRepository->find(1)->willReturn($order);
         $inventoryOperator->cancel($order)->shouldBeCalled();
 
-        self::assertSame($order, $provider->provide(1));
+        self::assertSame($order, $provider->prepareToUpdate(1));
     }
 
     public function testItThrowsExceptionIfOrderWithGivenIdDoesNotExist(): void
@@ -37,7 +37,7 @@ final class OldOrderProviderTest extends TestCase
         $orderRepository = $this->prophesize(OrderRepositoryInterface::class);
         $inventoryOperator = $this->prophesize(OrderInventoryOperatorInterface::class);
 
-        $provider = new OldOrderProvider(
+        $provider = new OrderPreparer(
             $orderRepository->reveal(),
             $inventoryOperator->reveal(),
         );
@@ -46,6 +46,6 @@ final class OldOrderProviderTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $provider->provide(1);
+        $provider->prepareToUpdate(1);
     }
 }

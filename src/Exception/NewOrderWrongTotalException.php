@@ -6,8 +6,8 @@ namespace Setono\SyliusOrderEditPlugin\Exception;
 
 final class NewOrderWrongTotalException extends \RuntimeException
 {
-    public static function occur(): self
+    public function __construct()
     {
-        return new self('New order total is greater than the initial order total');
+        parent::__construct('New order total is greater than the initial order total');
     }
 }
