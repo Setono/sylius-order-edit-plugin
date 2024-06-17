@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Tests\Functional;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
@@ -28,12 +29,15 @@ final class OrderUpdateTest extends WebTestCase
     {
         parent::setUp();
 
+        self::ensureKernelShutdown();
         self::$client = static::createClient(['environment' => 'test', 'debug' => true]);
+
+        $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0');
+        $this->makeVariantTrackedWithStockAndPrice('111F_patched_jeans_with_fancy_badges-variant-0');
     }
 
-    public function testItUpdatesOrder(): void
+    public function testItAllowsToChangeItemQuantity(): void
     {
-        $this->makeVariantTrackedWithStock();
         $order = $this->placeOrderProgramatically(quantity: 5);
 
         /** @var ProductVariantInterface $variant */
@@ -41,7 +45,7 @@ final class OrderUpdateTest extends WebTestCase
         $initialHold = $variant->getOnHold();
 
         $this->loginAsAdmin();
-        $this->updateOrder($order->getId());
+        $this->changeOrderItemQuantity($order->getId());
 
         self::assertResponseStatusCodeSame(302);
 
@@ -50,6 +54,55 @@ final class OrderUpdateTest extends WebTestCase
 
         $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
         self::assertSame($initialHold - 2, $variant->getOnHold());
+    }
+
+    public function testItAllowsToAddAndRemoveOrderItems(): void
+    {
+        $order = $this->placeOrderProgramatically(quantity: 5);
+
+        /** @var ProductVariantInterface $variant */
+        $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
+        $initialHold = $variant->getOnHold();
+
+        $this->loginAsAdmin();
+
+        /** @var ProductVariantInterface $newVariant */
+        $newVariant = $this->getVariantRepository()->findOneBy(['code' => '111F_patched_jeans_with_fancy_badges-variant-0']);
+        $this->manipulateOrderItems($order->getId(), $newVariant->getId(), 2);
+
+        self::assertResponseStatusCodeSame(302);
+
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame(2, $order->getItems()->first()->getQuantity());
+        self::assertSame($newVariant->getId(), $order->getItems()->first()->getVariant()->getId());
+
+        $oldVariant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
+        self::assertSame($initialHold - 5, $oldVariant->getOnHold());
+        $newVariant = $this->getVariantRepository()->findOneBy(['code' => '111F_patched_jeans_with_fancy_badges-variant-0']);
+        self::assertSame(2, $newVariant->getOnHold());
+    }
+
+    public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
+    {
+        $this->makeVariantTrackedWithStockAndPrice('111F_patched_jeans_with_fancy_badges-variant-0', 100);
+        $order = $this->placeOrderProgramatically(quantity: 1);
+
+        /** @var ProductVariantInterface $variant */
+        $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
+
+        $this->loginAsAdmin();
+
+        /** @var ProductVariantInterface $newVariant */
+        $newVariant = $this->getVariantRepository()->findOneBy(['code' => '111F_patched_jeans_with_fancy_badges-variant-0']);
+        $this->manipulateOrderItems($order->getId(), $newVariant->getId(), 90);
+
+        self::assertResponseStatusCodeSame(302);
+
+        $this->getEntityManager()->clear();
+
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame(1, $order->getItems()->first()->getQuantity());
+        self::assertSame($variant->getId(), $order->getItems()->first()->getVariant()->getId());
     }
 
     private function placeOrderProgramatically(
@@ -101,16 +154,22 @@ final class OrderUpdateTest extends WebTestCase
         return $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
     }
 
-    private function makeVariantTrackedWithStock(string $code = '000F_office_grey_jeans-variant-0', int $stock = 10): void
-    {
+    private function makeVariantTrackedWithStockAndPrice(
+        string $code = '000F_office_grey_jeans-variant-0',
+        int $stock = 10,
+        int $price = 1000,
+    ): void {
         $variantRepository = self::getContainer()->get('sylius.repository.product_variant');
         /** @var ProductVariantInterface $variant */
         $variant = $variantRepository->findOneBy(['code' => $code]);
         $variant->setTracked(true);
         $variant->setOnHand($stock);
-        $variant->getOnHold(0);
+        $variant->setOnHold(0);
+        foreach ($variant->getChannelPricings() as $channelPricing) {
+            $channelPricing->setPrice($price);
+        }
 
-        self::getContainer()->get('sylius.manager.product_variant')->flush();
+        $this->getEntityManager()->flush();
     }
 
     protected function tearDown(): void
@@ -132,7 +191,7 @@ final class OrderUpdateTest extends WebTestCase
         static::$client->submit($form);
     }
 
-    private function updateOrder(int $orderId): void
+    private function changeOrderItemQuantity(int $orderId): void
     {
         static::$client->request(
             'PATCH',
@@ -150,6 +209,24 @@ final class OrderUpdateTest extends WebTestCase
         );
     }
 
+    private function manipulateOrderItems(int $orderId, int $newItemVariantId, int $newItemQuantity): void
+    {
+        static::$client->request(
+            'PATCH',
+            sprintf('/admin/orders/%d/update-and-process', $orderId),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'sylius_order' => [
+                    'items' => [
+                        ['quantity' => $newItemQuantity, 'variant' => $newItemVariantId],
+                    ],
+                ],
+            ]),
+        );
+    }
+
     private function getOrderRepository(): OrderRepositoryInterface
     {
         return self::getContainer()->get('sylius.repository.order');
@@ -158,5 +235,10 @@ final class OrderUpdateTest extends WebTestCase
     private function getVariantRepository(): ProductVariantRepositoryInterface
     {
         return self::getContainer()->get('sylius.repository.product_variant');
+    }
+
+    private function getEntityManager(): EntityManagerInterface
+    {
+        return self::getContainer()->get('doctrine.orm.entity_manager');
     }
 }
