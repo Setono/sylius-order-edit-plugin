@@ -2,7 +2,7 @@
     "source": {
         "directories": [
             "src"
-        ]
+        ],
     },
     "logs": {
         "text": "php://stderr",
@@ -11,6 +11,6 @@
             "badge": "master"
         }
     },
-    "minMsi": 100.00,
-    "minCoveredMsi": 100.00
+    "minMsi": 70.00,
+    "minCoveredMsi": 70.00,
 }

@@ -9,9 +9,6 @@ use Sylius\Component\Grid\Definition\ArrayToDefinitionConverter;
 use Sylius\Component\Grid\Event\GridDefinitionConverterEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-/**
- * This event subscriber will add an edit order button to the order grid
- */
 final class AddEditOrderActionSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array
@@ -19,9 +16,7 @@ final class AddEditOrderActionSubscriber implements EventSubscriberInterface
         // The grid name is found in this file: vendor/sylius/sylius/src/Sylius/Bundle/AdminBundle/Resources/config/grids/order.yml
         $eventName = sprintf(ArrayToDefinitionConverter::EVENT_NAME, 'admin_order');
 
-        return [
-            $eventName => 'add',
-        ];
+        return [$eventName => 'add'];
     }
 
     public function add(GridDefinitionConverterEvent $event): void

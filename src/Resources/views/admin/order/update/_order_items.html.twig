@@ -16,6 +16,7 @@
             <tr>
                 <th>{{ 'sylius.ui.quantity'|trans }}</th>
                 <th>{{ 'sylius.ui.product'|trans }}</th>
+                <th>{{ 'sylius.ui.variant'|trans }}</th>
                 <th class="right aligned">{{ 'sylius.ui.unit_price'|trans }}</th>
                 <th class="right aligned">{{ 'sylius.ui.total'|trans }}</th>
                 <th>&nbsp;</th>
@@ -28,7 +29,8 @@
                 {% set orderItem = itemForm.vars.data %}
                 <tr>
                     <td>{{ form_row(itemForm.quantity) }}</td>
-                    <td>{{ orderItem.productName }}</td> {# todo add variant #}
+                    <td>{{ orderItem.productName }}</td>
+                    <td>{{ orderItem.variantName }}</td>
                     <td class="right aligned">{{ money.format(orderItem.unitPrice, order.currencyCode) }}</td>
                     <td class="right aligned">{{ money.format(orderItem.total, order.currencyCode) }}</td>
                     <td class="right aligned">

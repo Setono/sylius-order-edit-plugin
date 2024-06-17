@@ -21,9 +21,9 @@ final class OrderPaymentProcessor implements OrderProcessorInterface
         /** @var mixed $route */
         $route = $this->requestStack->getCurrentRequest()?->attributes->get('_route');
 
-        // This disables the \Sylius\Component\Core\OrderProcessing\OrderPaymentProcessor if the route is 'sylius_admin_order_update'
+        // This disables the \Sylius\Component\Core\OrderProcessing\OrderPaymentProcessor if the route is 'setono_sylius_order_edit_admin_update'
         // which means we are editing the order in the admin panel
-        if ('sylius_admin_order_update' === $route) {
+        if ('setono_sylius_order_edit_admin_update' === $route) {
             return;
         }
 

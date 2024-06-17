@@ -1,8 +1,8 @@
 {% form_theme form '@SyliusAdmin/Form/theme.html.twig' %}
 
-{{ form_start(form, {'action': path('sylius_admin_order_update', {'id': order.id}), 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'action': path('setono_sylius_order_edit_admin_update', {'id': order.id}), 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
 <div class="ui segment">
-    <input type="hidden" name="_method" value="PUT" />
+    <input type="hidden" name="_method" value="PATCH" />
 
     {{ include('@SetonoSyliusOrderEditPlugin/admin/order/update/_order_items.html.twig') }}
 
@@ -24,7 +24,6 @@
 
     {{ sylius_template_event('sylius.admin.order.update.form', {'resource': resource}) }}
 
-    {{ form_row(form._token) }}
     {% include '@SyliusUi/Form/Buttons/_update.html.twig' with {'paths': {'cancel': sylius_generate_redirect_path(path('sylius_admin_order_index'))}} %}
 </div>
 {{ form_end(form, {'render_rest': false}) }}
