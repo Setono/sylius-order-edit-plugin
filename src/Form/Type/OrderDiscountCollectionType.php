@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
-use Sylius\Component\Core\Model\Adjustment;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Order\Factory\AdjustmentFactoryInterface;
 use Sylius\Component\Order\Model\AdjustmentInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -15,12 +15,16 @@ final class OrderDiscountCollectionType extends AbstractType
 {
     private const CUSTOM_ORDER_DISCOUNT = 'custom_order_discount';
 
-    public function getParent()
+    public function __construct(private readonly AdjustmentFactoryInterface $adjustmentFactory)
+    {
+    }
+
+    public function getParent(): string
     {
         return CollectionType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'entry_type' => OrderDiscountType::class,
@@ -30,7 +34,6 @@ final class OrderDiscountCollectionType extends AbstractType
             'label' => 'sylius.form.order.discounts',
             'entry_options' => [
                 'label' => false,
-                'currency' => 'USD',
             ],
             'getter' => function (OrderInterface &$order): array {
                 $adjustments = $order->getAdjustments(self::CUSTOM_ORDER_DISCOUNT)->toArray();
@@ -44,9 +47,11 @@ final class OrderDiscountCollectionType extends AbstractType
 
                 /** @var int $discount */
                 foreach ($discounts as $discount) {
-                    $adjustment = new Adjustment();
-                    $adjustment->setType(self::CUSTOM_ORDER_DISCOUNT);
-                    $adjustment->setAmount(-1 * $discount);
+                    $adjustment = $this->adjustmentFactory->createWithData(
+                        self::CUSTOM_ORDER_DISCOUNT,
+                        'Custom discount: ' . number_format($discount, 2),
+                        -1 * $discount,
+                    );
                     $order->addAdjustment($adjustment);
                 }
             },

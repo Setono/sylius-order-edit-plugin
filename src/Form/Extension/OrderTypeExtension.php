@@ -7,6 +7,7 @@ namespace Setono\SyliusOrderEditPlugin\Form\Extension;
 use Setono\SyliusOrderEditPlugin\Form\Type\OrderDiscountCollectionType;
 use Setono\SyliusOrderEditPlugin\Form\Type\OrderItemCollectionType;
 use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
+use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -18,8 +19,20 @@ final class OrderTypeExtension extends AbstractTypeExtension
     {
         $builder
             ->add('items', OrderItemCollectionType::class)
-            ->add('discounts', OrderDiscountCollectionType::class, ['property_path' => 'adjustments'])
         ;
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $form = $event->getForm();
+            /** @var OrderInterface $order */
+            $order = $event->getData();
+
+            $form->add('discounts', OrderDiscountCollectionType::class, [
+                'property_path' => 'adjustments',
+                'entry_options' => [
+                    'currency' => $order->getCurrencyCode(),
+                ],
+            ]);
+        });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
             /** @var array $order */
