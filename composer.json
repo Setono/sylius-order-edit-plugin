@@ -65,7 +65,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Setono\\SyliusOrderEditPlugin\\Tests\\": "tests/"
+            "Setono\\SyliusOrderEditPlugin\\Tests\\": "tests/",
+            "Setono\\SyliusOrderEditPlugin\\Tests\\Application\\": "tests/Application/src"
         },
         "classmap": [
             "tests/Application/Kernel.php"

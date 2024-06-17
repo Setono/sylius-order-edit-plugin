@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\DependencyInjection;
 
+use Sylius\Bundle\CoreBundle\DependencyInjection\PrependDoctrineMigrationsTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -12,6 +13,8 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 final class SetonoSyliusOrderEditExtension extends Extension implements PrependExtensionInterface
 {
+    use PrependDoctrineMigrationsTrait;
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
@@ -36,5 +39,22 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
                 ],
             ],
         ]);
+
+        $this->prependDoctrineMigrations($container);
+    }
+
+    protected function getMigrationsNamespace(): string
+    {
+        return 'Setono\SyliusOrderEditPlugin\Migrations';
+    }
+
+    protected function getMigrationsDirectory(): string
+    {
+        return '@SetonoSyliusOrderEditPlugin/Migrations';
+    }
+
+    protected function getNamespacesOfMigrationsExecutedBefore(): array
+    {
+        return ['Sylius\Bundle\CoreBundle\Migrations'];
     }
 }
