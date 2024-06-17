@@ -22,6 +22,7 @@ final class OrderTypeExtension extends AbstractTypeExtension
         ;
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+            /** @var array $order */
             $order = $event->getData();
             if (!isset($order['discounts'])) {
                 $order['discounts'] = [];

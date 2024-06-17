@@ -8,9 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait InitialTotalAwareOrder
 {
-    /**
-     * @ORM\Column(type="integer", name="initial_total", options={"default": 0})
-     */
+    /** @ORM\Column(type="integer", name="initial_total", options={"default": 0}) */
     private int $initialTotal = 0;
 
     public function getInitialTotal(): int

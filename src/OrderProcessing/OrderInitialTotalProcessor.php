@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\OrderProcessing;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 
 final class OrderInitialTotalProcessor
@@ -13,7 +14,7 @@ final class OrderInitialTotalProcessor
     {
     }
 
-    public function process(OrderInterface $order): void
+    public function process(OrderInterface&InitialTotalAwareOrderInterface $order): void
     {
         $order->setInitialTotal($order->getTotal());
 

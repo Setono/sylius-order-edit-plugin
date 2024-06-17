@@ -10,6 +10,7 @@ use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 
 /**
  * @ORM\Entity
+ *
  * @ORM\Table(name="sylius_order")
  */
 class Order extends \Sylius\Component\Core\Model\Order implements InitialTotalAwareOrderInterface

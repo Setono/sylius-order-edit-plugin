@@ -11,6 +11,6 @@ interface PostUpdateChangesCheckerInterface
 {
     public function check(
         InitialTotalAwareOrderInterface $previousOrder,
-        OrderInterface $newOrder
+        OrderInterface $newOrder,
     ): void;
 }

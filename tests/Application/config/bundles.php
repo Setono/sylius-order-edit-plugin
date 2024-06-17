@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Setono\SyliusOrderEditPlugin\SetonoSyliusOrderEditPlugin;
-
 return [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],

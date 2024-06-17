@@ -22,7 +22,7 @@ final class OrderInitialTotalProcessorTest extends TestCase
         $entityManager = $this->prophesize(EntityManagerInterface::class);
 
         $processor = new OrderInitialTotalProcessor($entityManager->reveal());
-        $order = new class extends Order implements OrderInterface, InitialTotalAwareOrderInterface {
+        $order = new class() extends Order implements OrderInterface, InitialTotalAwareOrderInterface {
             use InitialTotalAwareOrder;
 
             public function getTotal(): int

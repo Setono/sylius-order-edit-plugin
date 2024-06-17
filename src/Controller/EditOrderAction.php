@@ -6,6 +6,7 @@ namespace Setono\SyliusOrderEditPlugin\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
+use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Setono\SyliusOrderEditPlugin\Exception\NewOrderWrongTotalException;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
@@ -34,6 +35,7 @@ final class EditOrderAction
     {
         $order = $this->oldOrderProvider->prepareToUpdate($id);
 
+        /** @var InitialTotalAwareOrderInterface $oldOrder */
         $oldOrder = clone $order;
 
         try {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
 use Sylius\Component\Core\Model\Adjustment;
-use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Order\Model\AdjustmentInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -42,6 +42,7 @@ final class OrderDiscountCollectionType extends AbstractType
             'setter' => function (OrderInterface &$order, array $discounts): void {
                 $order->removeAdjustments(self::CUSTOM_ORDER_DISCOUNT);
 
+                /** @var int $discount */
                 foreach ($discounts as $discount) {
                     $adjustment = new Adjustment();
                     $adjustment->setType(self::CUSTOM_ORDER_DISCOUNT);
