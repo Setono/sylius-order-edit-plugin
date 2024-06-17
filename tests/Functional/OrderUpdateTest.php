@@ -82,6 +82,20 @@ final class OrderUpdateTest extends WebTestCase
         self::assertSame(2, $newVariant->getOnHold());
     }
 
+    public function testItAllowsToAddDiscountsForTheWholeOrder(): void
+    {
+        $order = $this->placeOrderProgramatically(quantity: 5);
+        $initialOrderTotal = $order->getTotal();
+
+        $this->loginAsAdmin();
+        $this->addDiscountToOrder($order->getId(), 100);
+
+        self::assertResponseStatusCodeSame(302);
+
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame($initialOrderTotal - 100, $order->getTotal());
+    }
+
     public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
     {
         $this->makeVariantTrackedWithStockAndPrice('111F_patched_jeans_with_fancy_badges-variant-0', 100);
@@ -221,6 +235,24 @@ final class OrderUpdateTest extends WebTestCase
                 'sylius_order' => [
                     'items' => [
                         ['quantity' => $newItemQuantity, 'variant' => $newItemVariantId],
+                    ],
+                ],
+            ]),
+        );
+    }
+
+    private function addDiscountToOrder(int $orderId, int $discount): void
+    {
+        static::$client->request(
+            'PATCH',
+            sprintf('/admin/orders/%d/update-and-process', $orderId),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'sylius_order' => [
+                    'discounts' => [
+                        ['amount' => $discount, 'currency' => 'USD'],
                     ],
                 ],
             ]),
