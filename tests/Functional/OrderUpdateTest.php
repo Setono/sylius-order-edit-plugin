@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
@@ -85,15 +86,33 @@ final class OrderUpdateTest extends WebTestCase
     public function testItAllowsToAddDiscountsForTheWholeOrder(): void
     {
         $order = $this->placeOrderProgramatically(quantity: 5);
-        $initialOrderTotal = $order->getTotal();
+        $initialOrderTotal = $order->getInitialTotal();
 
         $this->loginAsAdmin();
-        $this->addDiscountToOrder($order->getId(), 100);
+        $this->addDiscountsToOrder($order->getId(), [1]);
 
         self::assertResponseStatusCodeSame(302);
 
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotal - 100, $order->getTotal());
+    }
+
+    public function testItAllowsToAddAndRemoveDiscountsForTheWholeOrderMultipleTimes(): void
+    {
+        $order = $this->placeOrderProgramatically(quantity: 5);
+        $initialOrderTotal = $order->getInitialTotal();
+
+        $this->loginAsAdmin();
+        $this->addDiscountsToOrder($order->getId(), [1]);
+        $this->addDiscountsToOrder($order->getId(), [1, 2]);
+        $this->addDiscountsToOrder($order->getId(), [2]);
+
+        self::assertResponseStatusCodeSame(302);
+
+        $this->getEntityManager()->clear();
+
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame($initialOrderTotal - 200, $order->getTotal());
     }
 
     public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
@@ -122,7 +141,7 @@ final class OrderUpdateTest extends WebTestCase
     private function placeOrderProgramatically(
         string $variantCode = '000F_office_grey_jeans-variant-0',
         int $quantity = 1,
-    ): Order {
+    ): Order|InitialTotalAwareOrderInterface {
         /** @var MessageBusInterface $commandBus */
         $commandBus = self::getContainer()->get('sylius.command_bus');
 
@@ -241,7 +260,7 @@ final class OrderUpdateTest extends WebTestCase
         );
     }
 
-    private function addDiscountToOrder(int $orderId, int $discount): void
+    private function addDiscountsToOrder(int $orderId, array $discounts): void
     {
         static::$client->request(
             'PATCH',
@@ -251,9 +270,7 @@ final class OrderUpdateTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'sylius_order' => [
-                    'discounts' => [
-                        ['amount' => $discount, 'currency' => 'USD'],
-                    ],
+                    'discounts' => $discounts,
                 ],
             ]),
         );

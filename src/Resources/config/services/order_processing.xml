@@ -39,12 +39,11 @@
         </service>
 
         <service
-            id="setono_sylius_order_edit.event_listener.order_completed_listener"
-            class="Setono\SyliusOrderEditPlugin\EventListener\OrderCompletedListener"
+            id="setono_sylius_order_edit.order_processing.order_initial_total_processor"
+            class="Setono\SyliusOrderEditPlugin\OrderProcessing\OrderInitialTotalProcessor"
+            public="true"
         >
-            <argument type="service" id="sylius.repository.order" />
             <argument type="service" id="sylius.manager.order" />
-            <tag name="messenger.message_handler" handles="Sylius\Bundle\ApiBundle\Event\OrderCompleted" bus="sylius.event_bus"/>
         </service>
     </services>
 </container>
