@@ -8,9 +8,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Setono\SyliusOrderEditPlugin\Event\OrderUpdated;
+use Setono\SyliusOrderEditPlugin\Event\PaidOrderTotalChanged;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
+use Sylius\Component\Core\OrderPaymentStates;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -38,5 +40,8 @@ final class OrderUpdater implements OrderUpdaterInterface
         $this->entityManager->flush();
 
         $this->eventBus->dispatch(new OrderUpdated($orderId));
+        if ($updatedOrder->getPaymentState() === OrderPaymentStates::STATE_PAID) {
+            $this->eventBus->dispatch(new PaidOrderTotalChanged($orderId, $oldOrder->getTotal(), $updatedOrder->getTotal()));
+        }
     }
 }
