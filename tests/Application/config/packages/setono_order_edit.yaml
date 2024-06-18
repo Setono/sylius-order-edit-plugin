@@ -1,0 +1,2 @@
+imports:
+    - { resource: '@SetonoSyliusOrderEditPlugin/Resources/config/config.yaml' }

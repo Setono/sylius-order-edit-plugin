@@ -1,0 +1,7 @@
+sylius_grid:
+    grids:
+        sylius_admin_order:
+            actions:
+                item:
+                    edit:
+                        type: update
