@@ -6,9 +6,10 @@ namespace Setono\SyliusOrderEditPlugin\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-trait InitialTotalAwareOrder
+trait InitialTotalAwareOrderTrait
 {
-    /** @ORM\Column(type="integer", name="initial_total", options={"default": 0}) */
+    /** @ORM\Column(type="integer") */
+    #[ORM\Column(type: 'integer')]
     private int $initialTotal = 0;
 
     public function getInitialTotal(): int
