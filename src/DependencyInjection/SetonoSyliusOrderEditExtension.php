@@ -25,6 +25,23 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
 
     public function prepend(ContainerBuilder $container): void
     {
+        $container->prependExtensionConfig('winzou_state_machine', [
+            'sylius_order' => [
+                'callbacks' => [
+                    'after' => [
+                        'setono_sylius_order_edit.set_initial_total' => [
+                            'on' => ['create'],
+                            'do' => [
+                                '@setono_sylius_order_edit.order_processing.order_initial_total_processor',
+                                'process',
+                            ],
+                            'args' => ['object'],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
         $container->prependExtensionConfig('sylius_ui', [
             'events' => [
                 'sylius.admin.order.update.content' => [

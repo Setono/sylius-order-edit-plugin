@@ -12,3 +12,12 @@ doctrine:
         charset: UTF8
 
         url: '%env(resolve:DATABASE_URL)%'
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'Setono\SyliusOrderEditPlugin\Tests\Application\Entity'

@@ -37,5 +37,13 @@
             <argument type="service" id="sylius.inventory.order_inventory_operator" />
             <argument type="service" id="sylius.order_processing.order_payment_processor.after_checkout" />
         </service>
+
+        <service
+            id="setono_sylius_order_edit.order_processing.order_initial_total_processor"
+            class="Setono\SyliusOrderEditPlugin\OrderProcessing\OrderInitialTotalProcessor"
+            public="true"
+        >
+            <argument type="service" id="sylius.manager.order" />
+        </service>
     </services>
 </container>

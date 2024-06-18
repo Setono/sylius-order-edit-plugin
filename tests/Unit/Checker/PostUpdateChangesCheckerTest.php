@@ -7,6 +7,7 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Checker;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesChecker;
+use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Setono\SyliusOrderEditPlugin\Exception\NewOrderWrongTotalException;
 use Sylius\Component\Core\Model\OrderInterface;
 
@@ -23,8 +24,8 @@ final class PostUpdateChangesCheckerTest extends TestCase
         $newOrder = $this->prophesize(OrderInterface::class);
         $newOrder->getTotal()->willReturn(1000);
 
-        $previousOrder = $this->prophesize(OrderInterface::class);
-        $previousOrder->getTotal()->willReturn(500);
+        $previousOrder = $this->prophesize(InitialTotalAwareOrderInterface::class);
+        $previousOrder->getInitialTotal()->willReturn(500);
 
         $validator->check($previousOrder->reveal(), $newOrder->reveal());
     }
@@ -36,8 +37,8 @@ final class PostUpdateChangesCheckerTest extends TestCase
         $newOrder = $this->prophesize(OrderInterface::class);
         $newOrder->getTotal()->willReturn(500);
 
-        $previousOrder = $this->prophesize(OrderInterface::class);
-        $previousOrder->getTotal()->willReturn(1000);
+        $previousOrder = $this->prophesize(InitialTotalAwareOrderInterface::class);
+        $previousOrder->getInitialTotal()->willReturn(1000);
 
         $this->expectNotToPerformAssertions();
 
@@ -51,8 +52,8 @@ final class PostUpdateChangesCheckerTest extends TestCase
         $newOrder = $this->prophesize(OrderInterface::class);
         $newOrder->getTotal()->willReturn(500);
 
-        $previousOrder = $this->prophesize(OrderInterface::class);
-        $previousOrder->getTotal()->willReturn(500);
+        $previousOrder = $this->prophesize(InitialTotalAwareOrderInterface::class);
+        $previousOrder->getInitialTotal()->willReturn(500);
 
         $this->expectNotToPerformAssertions();
 
