@@ -1,7 +1,15 @@
 sylius_grid:
+    templates:
+        action:
+            edit_order: "@SetonoSyliusOrderEditPlugin/admin/order/grid/editOrder.html.twig"
     grids:
         sylius_admin_order:
             actions:
                 item:
-                    edit:
-                        type: update
+                    delete:
+                        type: edit_order
+                        options:
+                            link:
+                                route: sylius_admin_order_update
+                                parameters:
+                                    id: resource.id
