@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Provider;
 
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Exception\OrderUpdateException;
 use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -17,7 +18,7 @@ final class UpdatedOrderProvider implements UpdatedOrderProviderInterface
     {
     }
 
-    public function provideFromOldOrderAndRequest(OrderInterface $oldOrder, Request $request): OrderInterface
+    public function provideFromOldOrderAndRequest(OrderInterface $oldOrder, Request $request): EditableOrderInterface
     {
         $form = $this->formFactory->create(
             OrderType::class,
@@ -33,7 +34,7 @@ final class UpdatedOrderProvider implements UpdatedOrderProviderInterface
         }
 
         $data = $form->getData();
-        Assert::isInstanceOf($data, OrderInterface::class);
+        Assert::isInstanceOf($data, EditableOrderInterface::class);
 
         return $data;
     }

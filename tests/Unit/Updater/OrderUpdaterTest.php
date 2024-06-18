@@ -16,8 +16,6 @@ use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
 use Setono\SyliusOrderEditPlugin\Updated\OrderUpdater;
-use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\OrderPaymentStates;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -46,14 +44,14 @@ final class OrderUpdaterTest extends TestCase
         );
 
         $order = $this->prophesize(EditableOrderInterface::class);
-        $updatedOrder = $this->prophesize(OrderInterface::class);
+        $updatedOrder = $this->prophesize(EditableOrderInterface::class);
 
         $orderPreparer->prepareToUpdate(1)->willReturn($order);
         $updatedOrderProvider->provideFromOldOrderAndRequest($order->reveal(), $request)->willReturn($updatedOrder);
-        $postUpdateChangesChecker->check(Argument::type(OrderInterface::class), $updatedOrder->reveal())->shouldBeCalled();
+        $postUpdateChangesChecker->check(Argument::type(EditableOrderInterface::class), $updatedOrder->reveal())->shouldBeCalled();
         $entityManager->flush()->shouldBeCalled();
 
-        $updatedOrder->getPaymentState()->willReturn(OrderPaymentStates::STATE_AWAITING_PAYMENT);
+        $updatedOrder->isAlreadyPaid()->willReturn(false);
 
         $eventBus
             ->dispatch(new OrderUpdated(1))
@@ -84,14 +82,14 @@ final class OrderUpdaterTest extends TestCase
         );
 
         $order = $this->prophesize(EditableOrderInterface::class);
-        $updatedOrder = $this->prophesize(OrderInterface::class);
+        $updatedOrder = $this->prophesize(EditableOrderInterface::class);
 
         $orderPreparer->prepareToUpdate(1)->willReturn($order);
         $updatedOrderProvider->provideFromOldOrderAndRequest($order->reveal(), $request)->willReturn($updatedOrder);
-        $postUpdateChangesChecker->check(Argument::type(OrderInterface::class), $updatedOrder->reveal())->shouldBeCalled();
+        $postUpdateChangesChecker->check(Argument::type(EditableOrderInterface::class), $updatedOrder->reveal())->shouldBeCalled();
         $entityManager->flush()->shouldBeCalled();
 
-        $updatedOrder->getPaymentState()->willReturn(OrderPaymentStates::STATE_PAID);
+        $updatedOrder->isAlreadyPaid()->willReturn(true);
         $order->getTotal()->willReturn(1000);
         $updatedOrder->getTotal()->willReturn(900);
 

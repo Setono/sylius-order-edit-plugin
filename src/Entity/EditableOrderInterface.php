@@ -8,4 +8,5 @@ use Sylius\Component\Core\Model\OrderInterface;
 
 interface EditableOrderInterface extends OrderInterface, InitialTotalAwareOrderInterface
 {
+    public function isAlreadyPaid(): bool;
 }
