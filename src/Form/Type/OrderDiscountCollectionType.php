@@ -48,7 +48,7 @@ final class OrderDiscountCollectionType extends AbstractType
                 foreach ($discounts as $discount) {
                     $adjustment = $this->adjustmentFactory->createWithData(
                         OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT,
-                        'Custom discount: ' . number_format($discount, 2),
+                        'Custom discount',
                         -1 * $discount,
                     );
                     $order->addAdjustment($adjustment);

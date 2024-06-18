@@ -92,6 +92,12 @@
         "check-style": "ecs check",
         "fix-style": "ecs check --fix",
         "functional-tests": "phpunit tests/Functional/",
+        "test": [
+            "@analyse",
+            "@check-style",
+            "@unit-tests",
+            "@functional-tests"
+        ],
         "unit-tests": "phpunit tests/Unit/"
     }
 }
