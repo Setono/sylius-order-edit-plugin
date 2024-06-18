@@ -7,10 +7,12 @@ namespace Setono\SyliusOrderEditPlugin\Updated;
 use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
+use Setono\SyliusOrderEditPlugin\Event\OrderUpdated;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 final class OrderUpdater implements OrderUpdaterInterface
 {
@@ -20,6 +22,7 @@ final class OrderUpdater implements OrderUpdaterInterface
         private readonly UpdatedOrderProcessorInterface $updatedOrderProcessor,
         private readonly PostUpdateChangesCheckerInterface $postUpdateChangesChecker,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MessageBusInterface $eventBus,
     ) {
     }
 
@@ -33,5 +36,7 @@ final class OrderUpdater implements OrderUpdaterInterface
         $this->updatedOrderProcessor->process($updatedOrder);
         $this->postUpdateChangesChecker->check($oldOrder, $updatedOrder);
         $this->entityManager->flush();
+
+        $this->eventBus->dispatch(new OrderUpdated($orderId));
     }
 }

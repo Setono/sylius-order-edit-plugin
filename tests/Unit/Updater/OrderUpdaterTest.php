@@ -10,12 +10,15 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
+use Setono\SyliusOrderEditPlugin\Event\OrderUpdated;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
 use Setono\SyliusOrderEditPlugin\Updated\OrderUpdater;
 use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 final class OrderUpdaterTest extends TestCase
 {
@@ -29,6 +32,7 @@ final class OrderUpdaterTest extends TestCase
         $updatedOrderProcessor = $this->prophesize(UpdatedOrderProcessorInterface::class);
         $postUpdateChangesChecker = $this->prophesize(PostUpdateChangesCheckerInterface::class);
         $entityManager = $this->prophesize(EntityManagerInterface::class);
+        $eventBus = $this->prophesize(MessageBusInterface::class);
 
         $orderUpdater = new OrderUpdater(
             $orderPreparer->reveal(),
@@ -36,6 +40,7 @@ final class OrderUpdaterTest extends TestCase
             $updatedOrderProcessor->reveal(),
             $postUpdateChangesChecker->reveal(),
             $entityManager->reveal(),
+            $eventBus->reveal(),
         );
 
         $order = $this->prophesize(EditableOrderInterface::class);
@@ -45,6 +50,12 @@ final class OrderUpdaterTest extends TestCase
         $updatedOrderProvider->provideFromOldOrderAndRequest($order->reveal(), $request)->willReturn($updatedOrder);
         $postUpdateChangesChecker->check(Argument::type(OrderInterface::class), $updatedOrder->reveal())->shouldBeCalled();
         $entityManager->flush()->shouldBeCalled();
+
+        $eventBus
+            ->dispatch(new OrderUpdated(1))
+            ->willReturn(new Envelope(Argument::type(OrderUpdated::class)))
+            ->shouldBeCalled()
+        ;
 
         $orderUpdater->update($request->reveal(), 1);
     }
