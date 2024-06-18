@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
+use Setono\SyliusOrderEditPlugin\Model\OrderEditDiscountTypes;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
@@ -111,8 +113,10 @@ final class OrderUpdateTest extends WebTestCase
 
         $this->getEntityManager()->clear();
 
+        /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotal - 200, $order->getTotal());
+        self::assertSame(-200, $order->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT));
     }
 
     public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
@@ -136,6 +140,49 @@ final class OrderUpdateTest extends WebTestCase
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame(1, $order->getItems()->first()->getQuantity());
         self::assertSame($variant->getId(), $order->getItems()->first()->getVariant()->getId());
+    }
+
+    public function testItAllowsToAddDiscountsForTheSpecificOrderItem(): void
+    {
+        $order = $this->placeOrderProgramatically(quantity: 5);
+        $initialOrderTotal = $order->getInitialTotal();
+
+        $this->loginAsAdmin();
+        $this->addDiscountsToOrderItem($order->getId(), [1]);
+
+        self::assertResponseStatusCodeSame(302);
+
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame($initialOrderTotal - 100, $order->getTotal());
+        self::assertSame(0, $order->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT));
+        self::assertSame(
+            -100,
+            $order->getItems()->first()->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
+        );
+    }
+
+    public function testItAllowsToAddAndRemoveDiscountsForTheOrderItemMultipleTimes(): void
+    {
+        $order = $this->placeOrderProgramatically(quantity: 5);
+        $initialOrderTotal = $order->getInitialTotal();
+
+        $this->loginAsAdmin();
+        $this->addDiscountsToOrderItem($order->getId(), [1]);
+        $this->addDiscountsToOrderItem($order->getId(), [1, 2]);
+        $this->addDiscountsToOrderItem($order->getId(), [2]);
+
+        self::assertResponseStatusCodeSame(302);
+
+        $this->getEntityManager()->clear();
+
+        /** @var EditableOrderInterface $order */
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame($initialOrderTotal - 200, $order->getTotal());
+        self::assertSame(0, $order->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT));
+        self::assertSame(
+            -200,
+            $order->getItems()->first()->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
+        );
     }
 
     private function placeOrderProgramatically(
@@ -271,6 +318,24 @@ final class OrderUpdateTest extends WebTestCase
             json_encode([
                 'sylius_order' => [
                     'discounts' => $discounts,
+                ],
+            ]),
+        );
+    }
+
+    private function addDiscountsToOrderItem(int $orderId, array $discounts): void
+    {
+        static::$client->request(
+            'PATCH',
+            sprintf('/admin/orders/%d/update-and-process', $orderId),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'sylius_order' => [
+                    'items' => [
+                        ['discounts' => $discounts],
+                    ],
                 ],
             ]),
         );
