@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
-use Setono\SyliusOrderEditPlugin\Model\OrderEditDiscountTypes;
+use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Factory\AdjustmentFactoryInterface;
 use Sylius\Component\Order\Model\AdjustmentInterface;
@@ -35,19 +35,19 @@ final class OrderDiscountCollectionType extends AbstractType
                 'label' => false,
             ],
             'getter' => function (OrderInterface &$order): array {
-                $adjustments = $order->getAdjustments(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT)->toArray();
+                $adjustments = $order->getAdjustments(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT)->toArray();
 
                 return array_map(function (AdjustmentInterface $adjustment): int {
                     return -1 * $adjustment->getAmount();
                 }, $adjustments);
             },
             'setter' => function (OrderInterface &$order, array $discounts): void {
-                $order->removeAdjustments(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT);
+                $order->removeAdjustments(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT);
 
                 /** @var int $discount */
                 foreach ($discounts as $discount) {
                     $adjustment = $this->adjustmentFactory->createWithData(
-                        OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT,
+                        AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT,
                         'Custom discount',
                         -1 * $discount,
                     );
