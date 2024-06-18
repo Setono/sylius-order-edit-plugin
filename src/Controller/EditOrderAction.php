@@ -35,9 +35,9 @@ final class EditOrderAction
         $order = $this->oldOrderProvider->prepareToUpdate($id);
 
         $oldOrder = clone $order;
-        $updatedOrder = $this->updatedOrderProvider->provideFromOldOrderAndRequest($order, $request);
 
         try {
+            $updatedOrder = $this->updatedOrderProvider->provideFromOldOrderAndRequest($order, $request);
             $this->updatedOrderProcessor->process($updatedOrder);
             $this->postUpdateChangesChecker->check($oldOrder, $updatedOrder);
             $this->entityManager->flush();
