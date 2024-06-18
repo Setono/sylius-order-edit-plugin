@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
-use Setono\SyliusOrderEditPlugin\Model\OrderEditDiscountTypes;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Order\Factory\AdjustmentFactoryInterface;
 use Sylius\Component\Order\Model\AdjustableInterface;
 use Sylius\Component\Order\Model\AdjustmentInterface;
@@ -15,11 +13,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class CustomDiscountCollectionType extends AbstractType
 {
-    protected string $label;
-    protected string $adjustmentType;
-
     public function __construct(
         protected readonly AdjustmentFactoryInterface $adjustmentFactory,
+        protected readonly string $label,
+        protected readonly string $adjustmentType,
     ) {
     }
 

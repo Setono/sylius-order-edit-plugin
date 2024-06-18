@@ -11,9 +11,6 @@ final class OrderItemDiscountCollectionType extends CustomDiscountCollectionType
 {
     public function __construct(AdjustmentFactoryInterface $adjustmentFactory)
     {
-        parent::__construct($adjustmentFactory);
-
-        $this->label = 'Custom item discount';
-        $this->adjustmentType = AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT;
+        parent::__construct($adjustmentFactory, 'Custom item discount', AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT);
     }
 }

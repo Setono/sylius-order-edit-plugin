@@ -7,7 +7,7 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Functional;
 use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
-use Setono\SyliusOrderEditPlugin\Model\OrderEditDiscountTypes;
+use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
@@ -116,7 +116,7 @@ final class OrderUpdateTest extends WebTestCase
         /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotal - 200, $order->getTotal());
-        self::assertSame(-200, $order->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT));
+        self::assertSame(-200, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
     }
 
     public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
@@ -154,10 +154,10 @@ final class OrderUpdateTest extends WebTestCase
 
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotal - 100, $order->getTotal());
-        self::assertSame(0, $order->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT));
+        self::assertSame(0, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
         self::assertSame(
             -100,
-            $order->getItems()->first()->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
+            $order->getItems()->first()->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
         );
     }
 
@@ -178,10 +178,10 @@ final class OrderUpdateTest extends WebTestCase
         /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotal - 200, $order->getTotal());
-        self::assertSame(0, $order->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_DISCOUNT));
+        self::assertSame(0, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
         self::assertSame(
             -200,
-            $order->getItems()->first()->getAdjustmentsTotal(OrderEditDiscountTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
+            $order->getItems()->first()->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
         );
     }
 
