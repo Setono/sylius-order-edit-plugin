@@ -8,5 +8,5 @@ use Sylius\Component\Core\Model\OrderInterface;
 
 interface UpdatedOrderProcessorInterface
 {
-    public function process(OrderInterface $updatedOrder): OrderInterface;
+    public function process(OrderInterface $updatedOrder): void;
 }

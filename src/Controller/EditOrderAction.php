@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
-use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Setono\SyliusOrderEditPlugin\Exception\NewOrderWrongTotalException;
-use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
-use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
-use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
+use Setono\SyliusOrderEditPlugin\Updated\OrderUpdaterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,28 +16,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class EditOrderAction
 {
     public function __construct(
-        private readonly OrderPreparerInterface $oldOrderProvider,
-        private readonly UpdatedOrderProviderInterface $updatedOrderProvider,
-        private readonly UpdatedOrderProcessorInterface $updatedOrderProcessor,
-        private readonly PostUpdateChangesCheckerInterface $postUpdateChangesChecker,
+        private readonly OrderUpdaterInterface $orderUpdater,
         private readonly UrlGeneratorInterface $router,
         private readonly RequestStack $requestStack,
-        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
     public function __invoke(Request $request, int $id): Response
     {
-        $order = $this->oldOrderProvider->prepareToUpdate($id);
-
-        /** @var InitialTotalAwareOrderInterface $oldOrder */
-        $oldOrder = clone $order;
-
         try {
-            $updatedOrder = $this->updatedOrderProvider->provideFromOldOrderAndRequest($order, $request);
-            $this->updatedOrderProcessor->process($updatedOrder);
-            $this->postUpdateChangesChecker->check($oldOrder, $updatedOrder);
-            $this->entityManager->flush();
+            $this->orderUpdater->update($request, $id);
         } catch (NewOrderWrongTotalException) {
             return $this->addFlashAndRedirect(
                 'error',

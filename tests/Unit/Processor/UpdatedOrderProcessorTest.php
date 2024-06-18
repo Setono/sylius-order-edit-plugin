@@ -35,6 +35,6 @@ final class UpdatedOrderProcessorTest extends TestCase
         $newOrder->setState('new')->shouldBeCalled();
         $orderInventoryOperator->hold($newOrder)->shouldBeCalled();
 
-        self::assertSame($newOrder->reveal(), $processor->process($newOrder->reveal()));
+        $processor->process($newOrder->reveal());
     }
 }
