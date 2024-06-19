@@ -27,7 +27,13 @@ final class AddEditOrderActionSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // todo add condition to check if the action is eligible
-        $actionGroup->addAction(Action::fromNameAndType('edit', 'update'));
+        $action = Action::fromNameAndType('edit_order', 'edit_order');
+        $action->setOptions([
+            'link' => [
+                'route' => 'sylius_admin_order_update',
+                'parameters' => ['id' => 'resource.id'],
+            ],
+        ]);
+        $actionGroup->addAction($action);
     }
 }
