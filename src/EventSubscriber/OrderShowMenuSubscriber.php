@@ -2,13 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusOrderEditPlugin\Menu;
+namespace Setono\SyliusOrderEditPlugin\EventSubscriber;
 
 use Sylius\Bundle\AdminBundle\Event\OrderShowMenuBuilderEvent;
+use Sylius\Bundle\AdminBundle\Menu\OrderShowMenuBuilder;
 use Sylius\Component\Core\OrderShippingStates;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-final class OrderShowMenuListener
+final class OrderShowMenuSubscriber implements EventSubscriberInterface
 {
+    public static function getSubscribedEvents(): array
+    {
+        return [OrderShowMenuBuilder::EVENT_NAME => 'addEditButton'];
+    }
+
     public function addEditButton(OrderShowMenuBuilderEvent $event): void
     {
         $menu = $event->getMenu();
