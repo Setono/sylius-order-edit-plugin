@@ -15,6 +15,7 @@ use Sylius\Bundle\ApiBundle\Command\Checkout\ChooseShippingMethod;
 use Sylius\Bundle\ApiBundle\Command\Checkout\CompleteOrder;
 use Sylius\Bundle\ApiBundle\Command\Checkout\UpdateCart;
 use Sylius\Component\Core\Model\Address;
+use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -88,7 +89,7 @@ final class OrderUpdateTest extends WebTestCase
     public function testItAllowsToAddDiscountsForTheWholeOrder(): void
     {
         $order = $this->placeOrderProgramatically(quantity: 5);
-        $initialOrderTotal = $order->getInitialTotal();
+        $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
         $this->addDiscountsToOrder($order->getId(), [1]);
@@ -96,13 +97,13 @@ final class OrderUpdateTest extends WebTestCase
         self::assertResponseStatusCodeSame(302);
 
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
-        self::assertSame($initialOrderTotal - 100, $order->getTotal());
+        self::assertSame($initialOrderTotalWithoutTaxes - 100, $this->getResultTotal($order));
     }
 
     public function testItAllowsToAddAndRemoveDiscountsForTheWholeOrderMultipleTimes(): void
     {
         $order = $this->placeOrderProgramatically(quantity: 5);
-        $initialOrderTotal = $order->getInitialTotal();
+        $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
         $this->addDiscountsToOrder($order->getId(), [1]);
@@ -115,7 +116,7 @@ final class OrderUpdateTest extends WebTestCase
 
         /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
-        self::assertSame($initialOrderTotal - 200, $order->getTotal());
+        self::assertSame($initialOrderTotalWithoutTaxes - 200, $this->getResultTotal($order));
         self::assertSame(-200, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
     }
 
@@ -144,16 +145,19 @@ final class OrderUpdateTest extends WebTestCase
 
     public function testItAllowsToAddDiscountsForTheSpecificOrderItem(): void
     {
+        $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0', 100);
+
         $order = $this->placeOrderProgramatically(quantity: 5);
-        $initialOrderTotal = $order->getInitialTotal();
+        $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
         $this->addDiscountsToOrderItem($order->getId(), [1]);
 
         self::assertResponseStatusCodeSame(302);
 
+        /** @var OrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
-        self::assertSame($initialOrderTotal - 100, $order->getTotal());
+        self::assertSame($initialOrderTotalWithoutTaxes - 100, $this->getResultTotal($order));
         self::assertSame(0, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
         self::assertSame(
             -100,
@@ -163,8 +167,10 @@ final class OrderUpdateTest extends WebTestCase
 
     public function testItAllowsToAddAndRemoveDiscountsForTheOrderItemMultipleTimes(): void
     {
+        $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0', 100);
+
         $order = $this->placeOrderProgramatically(quantity: 5);
-        $initialOrderTotal = $order->getInitialTotal();
+        $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
         $this->addDiscountsToOrderItem($order->getId(), [1]);
@@ -177,7 +183,7 @@ final class OrderUpdateTest extends WebTestCase
 
         /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
-        self::assertSame($initialOrderTotal - 200, $order->getTotal());
+        self::assertSame($initialOrderTotalWithoutTaxes - 200, $this->getResultTotal($order));
         self::assertSame(0, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
         self::assertSame(
             -200,
@@ -354,5 +360,15 @@ final class OrderUpdateTest extends WebTestCase
     private function getEntityManager(): EntityManagerInterface
     {
         return self::getContainer()->get('doctrine.orm.entity_manager');
+    }
+
+    private function getInitialTotal(Order|InitialTotalAwareOrderInterface $order)
+    {
+        return $order->getInitialTotal() - $order->getAdjustmentsTotalRecursively(AdjustmentInterface::TAX_ADJUSTMENT);
+    }
+
+    private function getResultTotal(Order|InitialTotalAwareOrderInterface $order)
+    {
+        return $order->getTotal() - $order->getAdjustmentsTotalRecursively(AdjustmentInterface::TAX_ADJUSTMENT);
     }
 }
