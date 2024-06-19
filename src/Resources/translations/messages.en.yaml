@@ -1,4 +1,5 @@
 setono_sylius_order_edit:
     ui:
+        discounts: Discounts
         order_discounts: Order discounts
         order_items: Order items

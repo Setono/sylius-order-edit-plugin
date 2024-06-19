@@ -20,6 +20,14 @@
             <tag name="form.type"/>
         </service>
 
+        <service
+            id="setono_sylius_order_edit.form.type.order_item_discount_collection"
+            class="Setono\SyliusOrderEditPlugin\Form\Type\OrderItemDiscountCollectionType"
+        >
+            <argument type="service" id="sylius.factory.adjustment" />
+            <tag name="form.type"/>
+        </service>
+
         <!-- Form type extensions -->
         <service id="setono_sylius_order_edit.form.extension.order"
                  class="Setono\SyliusOrderEditPlugin\Form\Extension\OrderTypeExtension">

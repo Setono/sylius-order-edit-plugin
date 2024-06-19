@@ -7,10 +7,10 @@ namespace Setono\SyliusOrderEditPlugin\Form\Type;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Sylius\Component\Order\Factory\AdjustmentFactoryInterface;
 
-final class OrderDiscountCollectionType extends CustomDiscountCollectionType
+final class OrderItemDiscountCollectionType extends CustomDiscountCollectionType
 {
     public function __construct(AdjustmentFactoryInterface $adjustmentFactory)
     {
-        parent::__construct($adjustmentFactory, 'Custom discount', AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT);
+        parent::__construct($adjustmentFactory, 'Custom item discount', AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT);
     }
 }
