@@ -6,7 +6,6 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
-use Setono\SyliusOrderEditPlugin\Entity\InitialTotalAwareOrderInterface;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
@@ -194,7 +193,7 @@ final class OrderUpdateTest extends WebTestCase
     private function placeOrderProgramatically(
         string $variantCode = '000F_office_grey_jeans-variant-0',
         int $quantity = 1,
-    ): Order|InitialTotalAwareOrderInterface {
+    ): EditableOrderInterface {
         /** @var MessageBusInterface $commandBus */
         $commandBus = self::getContainer()->get('sylius.command_bus');
 

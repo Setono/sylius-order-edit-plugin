@@ -11,8 +11,7 @@ interface OrderUpdaterInterface
 {
     /**
      * @throws NewOrderWrongTotalException
-     *
-     * @throw \InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function update(Request $request, int $orderId): void;
 }

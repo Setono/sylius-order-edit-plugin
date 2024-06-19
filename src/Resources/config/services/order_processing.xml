@@ -55,7 +55,7 @@
             <argument type="service" id="setono_sylius_order_edit.processor.updated_order_processor" />
             <argument type="service" id="setono_sylius_order_edit.checker.post_update_changes_checker" />
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="sylius.event_bus" />
+            <argument type="service" id="setono_sylius_order_edit.event_bus" />
         </service>
     </services>
 </container>

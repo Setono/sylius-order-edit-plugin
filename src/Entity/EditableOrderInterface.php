@@ -6,7 +6,11 @@ namespace Setono\SyliusOrderEditPlugin\Entity;
 
 use Sylius\Component\Core\Model\OrderInterface;
 
-interface EditableOrderInterface extends OrderInterface, InitialTotalAwareOrderInterface
+interface EditableOrderInterface extends OrderInterface
 {
     public function isAlreadyPaid(): bool;
+
+    public function getInitialTotal(): int;
+
+    public function setInitialTotal(int $initialTotal): void;
 }

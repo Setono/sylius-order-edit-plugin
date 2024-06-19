@@ -11,7 +11,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Event\OrderUpdated;
-use Setono\SyliusOrderEditPlugin\Event\PaidOrderTotalChanged;
+use Setono\SyliusOrderEditPlugin\Event\PaidOrderUpdated;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
@@ -62,7 +62,7 @@ final class OrderUpdaterTest extends TestCase
         $orderUpdater->update($request->reveal(), 1);
     }
 
-    public function testItDispatchesAdditionalEventIfOrderWasAlreadyPaid(): void
+    public function testItDispatchesAdditionalEventIfOrderWasAlreadyPaidAndTheTotalChanged(): void
     {
         $request = $this->prophesize(Request::class);
         $orderPreparer = $this->prophesize(OrderPreparerInterface::class);
@@ -99,8 +99,8 @@ final class OrderUpdaterTest extends TestCase
             ->shouldBeCalled()
         ;
         $eventBus
-            ->dispatch(new PaidOrderTotalChanged(1, 1000, 900))
-            ->willReturn(new Envelope(Argument::type(PaidOrderTotalChanged::class)))
+            ->dispatch(new PaidOrderUpdated(1, 1000, 900))
+            ->willReturn(new Envelope(Argument::type(PaidOrderUpdated::class)))
             ->shouldBeCalled()
         ;
 
