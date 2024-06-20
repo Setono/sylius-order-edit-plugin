@@ -65,7 +65,11 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
         $container->prependExtensionConfig('framework', [
             'messenger' => [
                 'buses' => [
-                    'setono_sylius_order_edit.event_bus' => null,
+                    'setono_sylius_order_edit.event_bus' => [
+                        'default_middleware' => [
+                            'allow_no_handlers' => true,
+                        ],
+                    ],
                 ],
             ],
         ]);
