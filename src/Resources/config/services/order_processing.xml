@@ -45,5 +45,17 @@
         >
             <argument type="service" id="sylius.manager.order" />
         </service>
+
+        <service
+            id="setono_sylius_order_edit.updated.order_updater"
+            class="Setono\SyliusOrderEditPlugin\Updated\OrderUpdater"
+        >
+            <argument type="service" id="setono_sylius_order_edit.preparer.order_preparer" />
+            <argument type="service" id="setono_sylius_order_edit.provider.updated_order_provider" />
+            <argument type="service" id="setono_sylius_order_edit.processor.updated_order_processor" />
+            <argument type="service" id="setono_sylius_order_edit.checker.post_update_changes_checker" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="setono_sylius_order_edit.event_bus" />
+        </service>
     </services>
 </container>

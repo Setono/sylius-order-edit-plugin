@@ -6,9 +6,9 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Provider;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparer;
 use Sylius\Component\Core\Inventory\Operator\OrderInventoryOperatorInterface;
-use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 
 final class OrderPreparerTest extends TestCase
@@ -25,11 +25,11 @@ final class OrderPreparerTest extends TestCase
             $inventoryOperator->reveal(),
         );
 
-        $order = new Order();
-        $orderRepository->find(1)->willReturn($order);
-        $inventoryOperator->cancel($order)->shouldBeCalled();
+        $order = $this->prophesize(EditableOrderInterface::class);
+        $orderRepository->find(1)->willReturn($order->reveal());
+        $inventoryOperator->cancel($order->reveal())->shouldBeCalled();
 
-        self::assertSame($order, $provider->prepareToUpdate(1));
+        self::assertSame($order->reveal(), $provider->prepareToUpdate(1));
     }
 
     public function testItThrowsExceptionIfOrderWithGivenIdDoesNotExist(): void

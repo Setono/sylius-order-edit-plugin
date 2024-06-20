@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Preparer;
 
-use Sylius\Component\Core\Model\OrderInterface;
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 
 interface OrderPreparerInterface
 {
-    public function prepareToUpdate(int $orderId): OrderInterface;
+    public function prepareToUpdate(int $orderId): EditableOrderInterface;
 }

@@ -6,10 +6,10 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Provider;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Exception\OrderUpdateException;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProvider;
 use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
-use Sylius\Component\Core\Model\Order;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,19 +24,19 @@ final class UpdatedOrderProviderTest extends TestCase
         $form = $this->prophesize(FormInterface::class);
 
         $provider = new UpdatedOrderProvider($formFactory->reveal());
-        $order = new Order();
-        $newOrder = new Order();
+        $order = $this->prophesize(EditableOrderInterface::class);
+        $newOrder = $this->prophesize(EditableOrderInterface::class);
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
+        $formFactory->create(OrderType::class, $order->reveal(), ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(true);
         $form->isValid()->willReturn(true);
 
-        $form->getData()->willReturn($newOrder);
+        $form->getData()->willReturn($newOrder->reveal());
 
-        self::assertSame($newOrder, $provider->provideFromOldOrderAndRequest($order, $request));
+        self::assertSame($newOrder->reveal(), $provider->provideFromOldOrderAndRequest($order->reveal(), $request));
     }
 
     public function testItThrowsExceptionIfFormIsNotSubmitted(): void
@@ -45,17 +45,17 @@ final class UpdatedOrderProviderTest extends TestCase
         $form = $this->prophesize(FormInterface::class);
 
         $provider = new UpdatedOrderProvider($formFactory->reveal());
-        $order = new Order();
+        $order = $this->prophesize(EditableOrderInterface::class);
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
+        $formFactory->create(OrderType::class, $order->reveal(), ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(false);
 
         $this->expectException(OrderUpdateException::class);
 
-        $provider->provideFromOldOrderAndRequest($order, $request);
+        $provider->provideFromOldOrderAndRequest($order->reveal(), $request);
     }
 
     public function testItThrowsExceptionIfFormIsNotValid(): void
@@ -64,10 +64,10 @@ final class UpdatedOrderProviderTest extends TestCase
         $form = $this->prophesize(FormInterface::class);
 
         $provider = new UpdatedOrderProvider($formFactory->reveal());
-        $order = new Order();
+        $order = $this->prophesize(EditableOrderInterface::class);
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
+        $formFactory->create(OrderType::class, $order->reveal(), ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(true);
@@ -75,7 +75,7 @@ final class UpdatedOrderProviderTest extends TestCase
 
         $this->expectException(OrderUpdateException::class);
 
-        $provider->provideFromOldOrderAndRequest($order, $request);
+        $provider->provideFromOldOrderAndRequest($order->reveal(), $request);
     }
 
     public function testItThrowsExceptionIfFormDataIsNotOrder(): void
@@ -84,10 +84,10 @@ final class UpdatedOrderProviderTest extends TestCase
         $form = $this->prophesize(FormInterface::class);
 
         $provider = new UpdatedOrderProvider($formFactory->reveal());
-        $order = new Order();
+        $order = $this->prophesize(EditableOrderInterface::class);
         $request = new Request();
 
-        $formFactory->create(OrderType::class, $order, ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
+        $formFactory->create(OrderType::class, $order->reveal(), ['validation_groups' => 'sylius', 'csrf_protection' => false])->willReturn($form);
         $form->handleRequest($request)->shouldBeCalled()->willReturn($form);
 
         $form->isSubmitted()->willReturn(true);
@@ -97,6 +97,6 @@ final class UpdatedOrderProviderTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $provider->provideFromOldOrderAndRequest($order, $request);
+        $provider->provideFromOldOrderAndRequest($order->reveal(), $request);
     }
 }

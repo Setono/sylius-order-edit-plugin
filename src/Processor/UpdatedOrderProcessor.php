@@ -17,14 +17,12 @@ final class UpdatedOrderProcessor implements UpdatedOrderProcessorInterface
     ) {
     }
 
-    public function process(OrderInterface $updatedOrder): OrderInterface
+    public function process(OrderInterface $updatedOrder): void
     {
         $updatedOrder->setState(OrderInterface::STATE_CART);
         $this->orderProcessor->process($updatedOrder);
         $this->afterCheckoutOrderPaymentProcessor->process($updatedOrder);
         $updatedOrder->setState(OrderInterface::STATE_NEW);
         $this->orderInventoryOperator->hold($updatedOrder);
-
-        return $updatedOrder;
     }
 }
