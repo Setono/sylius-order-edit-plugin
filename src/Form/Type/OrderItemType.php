@@ -14,6 +14,9 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class OrderItemType extends AbstractResourceType
 {
@@ -44,21 +47,15 @@ final class OrderItemType extends AbstractResourceType
             ])
         ;
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
-            $form = $event->getForm();
-            /** @var OrderItemInterface|null $orderItem */
-            $orderItem = $event->getData();
-            if ($orderItem === null) {
-                return;
-            }
+        $currencyCode = $options['currency_code'];
 
-            /** @var OrderInterface $order */
-            $order = $orderItem->getOrder();
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($currencyCode): void {
+            $form = $event->getForm();
 
             $form->add('discounts', OrderItemDiscountCollectionType::class, [
                 'property_path' => 'adjustments',
                 'entry_options' => [
-                    'currency' => $order->getCurrencyCode(),
+                    'currency' => $currencyCode,
                 ],
             ]);
         });
@@ -71,5 +68,12 @@ final class OrderItemType extends AbstractResourceType
             }
             $event->setData($orderItem);
         });
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setRequired('currency_code');
     }
 }
