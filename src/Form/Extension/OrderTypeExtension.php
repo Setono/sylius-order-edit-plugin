@@ -17,14 +17,16 @@ final class OrderTypeExtension extends AbstractTypeExtension
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('items', OrderItemCollectionType::class)
-        ;
-
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
             $form = $event->getForm();
             /** @var OrderInterface $order */
             $order = $event->getData();
+
+            $form
+                ->add('items', OrderItemCollectionType::class, [
+                    'entry_options' => ['currency_code' => $order->getCurrencyCode()],
+                ])
+            ;
 
             $form->add('discounts', OrderDiscountCollectionType::class, [
                 'property_path' => 'adjustments',

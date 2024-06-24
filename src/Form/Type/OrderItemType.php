@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Order\Modifier\OrderItemQuantityModifierInterface;
@@ -14,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class OrderItemType extends AbstractResourceType
 {
@@ -44,21 +44,16 @@ final class OrderItemType extends AbstractResourceType
             ])
         ;
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
-            $form = $event->getForm();
-            /** @var OrderItemInterface|null $orderItem */
-            $orderItem = $event->getData();
-            if ($orderItem === null) {
-                return;
-            }
+        /** @var string $currencyCode */
+        $currencyCode = $options['currency_code'];
 
-            /** @var OrderInterface $order */
-            $order = $orderItem->getOrder();
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($currencyCode): void {
+            $form = $event->getForm();
 
             $form->add('discounts', OrderItemDiscountCollectionType::class, [
                 'property_path' => 'adjustments',
                 'entry_options' => [
-                    'currency' => $order->getCurrencyCode(),
+                    'currency' => $currencyCode,
                 ],
                 'button_add_label' => 'setono_sylius_order_edit.ui.add_discount',
             ]);
@@ -72,5 +67,13 @@ final class OrderItemType extends AbstractResourceType
             }
             $event->setData($orderItem);
         });
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setRequired('currency_code');
+        $resolver->setAllowedTypes('currency_code', 'string');
     }
 }
