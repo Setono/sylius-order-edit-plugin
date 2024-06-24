@@ -58,7 +58,7 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
             'templates' => [
                 'action' => [
                     'edit_order' => '@SetonoSyliusOrderEditPlugin/admin/order/grid/editOrder.html.twig',
-                    ],
+                ],
             ],
         ]);
 
@@ -66,9 +66,7 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
             'messenger' => [
                 'buses' => [
                     'setono_sylius_order_edit.event_bus' => [
-                        'default_middleware' => [
-                            'allow_no_handlers' => true,
-                        ],
+                        'default_middleware' => 'allow_no_handlers',
                     ],
                 ],
             ],
