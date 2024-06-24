@@ -24,7 +24,7 @@ final class OrderTypeExtension extends AbstractTypeExtension
 
             $form
                 ->add('items', OrderItemCollectionType::class, [
-                    'entry_options' => ['currency_code' => $order->getCurrencyCode()]
+                    'entry_options' => ['currency_code' => $order->getCurrencyCode()],
                 ])
             ;
 

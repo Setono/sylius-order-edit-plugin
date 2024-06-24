@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Order\Modifier\OrderItemQuantityModifierInterface;
@@ -14,8 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class OrderItemType extends AbstractResourceType
@@ -47,6 +44,7 @@ final class OrderItemType extends AbstractResourceType
             ])
         ;
 
+        /** @var string $currencyCode */
         $currencyCode = $options['currency_code'];
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($currencyCode): void {
@@ -75,5 +73,6 @@ final class OrderItemType extends AbstractResourceType
         parent::configureOptions($resolver);
 
         $resolver->setRequired('currency_code');
+        $resolver->setAllowedTypes('currency_code', 'string');
     }
 }
