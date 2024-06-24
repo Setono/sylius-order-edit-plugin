@@ -60,6 +60,7 @@ final class OrderItemType extends AbstractResourceType
                 'entry_options' => [
                     'currency' => $order->getCurrencyCode(),
                 ],
+                'button_add_label' => 'setono_sylius_order_edit.ui.add_discount',
             ]);
         });
 

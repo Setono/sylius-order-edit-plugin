@@ -31,6 +31,7 @@ final class OrderTypeExtension extends AbstractTypeExtension
                 'entry_options' => [
                     'currency' => $order->getCurrencyCode(),
                 ],
+                'button_add_label' => 'setono_sylius_order_edit.ui.add_discount',
             ]);
         });
 

@@ -1,5 +1,7 @@
 setono_sylius_order_edit:
     ui:
+        add_discount: Add discount
+        add_order_item: Add order item
         discounts: Discounts
         order_discounts: Order discounts
         order_items: Order items
