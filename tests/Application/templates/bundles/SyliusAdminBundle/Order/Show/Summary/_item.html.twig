@@ -49,11 +49,14 @@
         {{ money.format(item.total, order.currencyCode) }}
     </td>
 </tr>
+{% set discounts = item.getAdjustments(adminOrderItemDiscountAdjustment) %}
+{% if discounts is not empty %}
 <tr>
     <td colspan="9">
         <strong>{{ 'setono_sylius_order_edit.ui.discounts'|trans }}:</strong>
-        {% for discount in item.getAdjustments(adminOrderItemDiscountAdjustment) %}
+        {% for discount in discounts %}
             {{ money.format(discount.amount, order.currencyCode) }}{% if not loop.last %}, {% endif %}
         {% endfor %}
     </td>
 </tr>
+{% endif %}
