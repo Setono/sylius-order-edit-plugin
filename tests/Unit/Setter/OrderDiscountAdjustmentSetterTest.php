@@ -6,6 +6,7 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Setter;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusOrderEditPlugin\Adder\DiscountAdjustmentsAdderInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
@@ -42,12 +43,12 @@ final class OrderDiscountAdjustmentSetterTest extends TestCase
         ;
 
         $orderItemDiscountAdjustmentAdder
-            ->add($firstItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, -400)
+            ->add($firstItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, Argument::type('string'), 'Custom order discount', -400)
             ->shouldBeCalled()
         ;
 
         $orderItemDiscountAdjustmentAdder
-            ->add($secondItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, -600)
+            ->add($secondItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, Argument::type('string'), 'Custom order discount', -600)
             ->shouldBeCalled()
         ;
 

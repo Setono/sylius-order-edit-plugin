@@ -8,5 +8,11 @@ use Sylius\Component\Core\Model\OrderItemInterface;
 
 interface DiscountAdjustmentsAdderInterface
 {
-    public function add(OrderItemInterface $orderItem, string $adjustmentType, int $discount): void;
+    public function add(
+        OrderItemInterface $orderItem,
+        string $adjustmentType,
+        string $originCode,
+        string $label,
+        int $discount,
+    ): void;
 }

@@ -18,8 +18,13 @@ final class DiscountAdjustmentsAdder implements DiscountAdjustmentsAdderInterfac
     ) {
     }
 
-    public function add(OrderItemInterface $orderItem, string $adjustmentType, int $discount): void
-    {
+    public function add(
+        OrderItemInterface $orderItem,
+        string $adjustmentType,
+        string $originCode,
+        string $label,
+        int $discount,
+    ): void {
         $discounts = $this->integerDistributor->distribute($discount, $orderItem->getQuantity());
         $units = $orderItem->getUnits();
 
@@ -28,9 +33,10 @@ final class DiscountAdjustmentsAdder implements DiscountAdjustmentsAdderInterfac
             /** @var AdjustmentInterface $adjustment */
             $adjustment = $this->adjustmentFactory->createWithData(
                 $adjustmentType,
-                'Custom discount',
+                $label,
                 $discount,
             );
+            $adjustment->setOriginCode($originCode);
 
             /** @var OrderItemUnitInterface $unit */
             $unit = $units->get($i);

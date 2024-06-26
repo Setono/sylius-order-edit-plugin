@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
+use Ramsey\Uuid\Uuid;
 use Setono\SyliusOrderEditPlugin\Adder\DiscountAdjustmentsAdderInterface;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Sylius\Component\Core\Model\OrderItemInterface;
@@ -26,9 +27,11 @@ final class OrderItemDiscountCollectionType extends CustomDiscountCollectionType
 
         $adjustable->removeAdjustmentsRecursively($this->adjustmentType);
 
+        $originCode = Uuid::uuid4()->toString();
+
         /** @var int $discount */
         foreach ($discounts as $discount) {
-            $this->discountAdjustmentsAdder->add($adjustable, $this->adjustmentType, -$discount);
+            $this->discountAdjustmentsAdder->add($adjustable, $this->adjustmentType, $originCode, 'Custom item discount', -$discount);
         }
     }
 }

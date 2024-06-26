@@ -46,18 +46,22 @@ final class DiscountAdjustmentsAdderTest extends TestCase
         $thirdAdjustment = $this->prophesize(AdjustmentInterface::class);
 
         $adjustmentFactory
-            ->createWithData(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'Custom discount', -333)
+            ->createWithData(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'Label', -333)
             ->willReturn($firstAdjustment->reveal(), $secondAdjustment->reveal())
         ;
         $adjustmentFactory
-            ->createWithData(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'Custom discount', -334, )
+            ->createWithData(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'Label', -334, )
             ->willReturn($thirdAdjustment->reveal())
         ;
+
+        $firstAdjustment->setOriginCode('ORIGIN_CODE')->shouldBeCalled();
+        $secondAdjustment->setOriginCode('ORIGIN_CODE')->shouldBeCalled();
+        $thirdAdjustment->setOriginCode('ORIGIN_CODE')->shouldBeCalled();
 
         $firstUnit->addAdjustment($firstAdjustment->reveal())->shouldBeCalled();
         $secondUnit->addAdjustment($secondAdjustment->reveal())->shouldBeCalled();
         $thirdUnit->addAdjustment($thirdAdjustment->reveal())->shouldBeCalled();
 
-        $adder->add($item->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, -1000);
+        $adder->add($item->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'ORIGIN_CODE', 'Label', -1000);
     }
 }

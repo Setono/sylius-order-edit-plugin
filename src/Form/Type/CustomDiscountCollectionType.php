@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
+use Doctrine\Common\Collections\Collection;
+use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\OrderItemInterface;
 use Sylius\Component\Order\Factory\AdjustmentFactoryInterface;
 use Sylius\Component\Order\Model\AdjustableInterface;
 use Sylius\Component\Order\Model\AdjustmentInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Webmozart\Assert\Assert;
 
 abstract class CustomDiscountCollectionType extends AbstractType
 {
@@ -37,11 +41,26 @@ abstract class CustomDiscountCollectionType extends AbstractType
                 'label' => false,
             ],
             'getter' => function (AdjustableInterface &$adjustable): array {
-                $adjustments = $adjustable->getAdjustments($this->adjustmentType)->toArray();
+                Assert::isInstanceOfAny($adjustable, [OrderInterface::class, OrderItemInterface::class]);
+                /** @var Collection $adjustments */
+                $adjustments = $adjustable->getAdjustmentsRecursively($this->adjustmentType);
 
-                return array_map(function (AdjustmentInterface $adjustment): int {
-                    return -1 * $adjustment->getAmount();
-                }, $adjustments);
+                $notDistributedAdjustments = [];
+                /** @var AdjustmentInterface $adjustment */
+                foreach ($adjustments as $adjustment) {
+                    /** @var string $originCode */
+                    $originCode = $adjustment->getOriginCode();
+
+                    if (isset($notDistributedAdjustments[$originCode])) {
+                        $notDistributedAdjustments[$originCode] += ($adjustment->getAmount()) * -1;
+
+                        continue;
+                    }
+
+                    $notDistributedAdjustments[$originCode] = ($adjustment->getAmount()) * -1;
+                }
+
+                return $notDistributedAdjustments;
             },
             'setter' => function (AdjustableInterface &$adjustable, array $discounts): void {
                 $this->setDiscounts($adjustable, $discounts);
