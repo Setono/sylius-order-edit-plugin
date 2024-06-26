@@ -29,11 +29,4 @@
         <function name="var_dump"/>
         <function name="print_r"/>
     </forbiddenFunctions>
-    <issueHandlers>
-        <UndefinedInterfaceMethod>
-            <errorLevel type="suppress">
-                <file name="src/Form/Type/CustomDiscountCollectionType.php"/>
-            </errorLevel>
-        </UndefinedInterfaceMethod>
-    </issueHandlers>
 </psalm>

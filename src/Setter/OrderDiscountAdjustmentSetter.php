@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Setter;
 
-use Ramsey\Uuid\Uuid;
 use Setono\SyliusOrderEditPlugin\Adder\DiscountAdjustmentsAdderInterface;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Sylius\Component\Core\Distributor\MinimumPriceDistributorInterface;
@@ -25,10 +24,10 @@ final class OrderDiscountAdjustmentSetter implements OrderDiscountAdjustmentSett
         /** @var ChannelInterface $channel */
         $channel = $order->getChannel();
         $items = $order->getItems();
+        /** @var int $orderId */
+        $orderId = $order->getId();
 
         $distributedPrices = $this->minimumPriceDistributor->distribute($items->toArray(), $discount, $channel, true);
-
-        $originCode = Uuid::uuid4()->toString();
 
         /** @var int $distribution */
         foreach ($distributedPrices as $i => $distribution) {
@@ -37,7 +36,7 @@ final class OrderDiscountAdjustmentSetter implements OrderDiscountAdjustmentSett
             $this->orderItemDiscountAdjustmentAdder->add(
                 $item,
                 AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT,
-                $originCode,
+                AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT . '_' . $orderId,
                 'Custom order discount',
                 -$distribution,
             );

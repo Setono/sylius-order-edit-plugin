@@ -6,7 +6,6 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Setter;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusOrderEditPlugin\Adder\DiscountAdjustmentsAdderInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
@@ -36,6 +35,7 @@ final class OrderDiscountAdjustmentSetterTest extends TestCase
         $channel = $this->prophesize(ChannelInterface::class);
         $order->getItems()->willReturn(new ArrayCollection([$firstItem->reveal(), $secondItem->reveal()]));
         $order->getChannel()->willReturn($channel->reveal());
+        $order->getId()->willReturn(100);
 
         $minimumPriceDistributor
             ->distribute([$firstItem->reveal(), $secondItem->reveal()], 1000, $channel->reveal(), true)
@@ -43,12 +43,12 @@ final class OrderDiscountAdjustmentSetterTest extends TestCase
         ;
 
         $orderItemDiscountAdjustmentAdder
-            ->add($firstItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, Argument::type('string'), 'Custom order discount', -400)
+            ->add($firstItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT . '_100', 'Custom order discount', -400)
             ->shouldBeCalled()
         ;
 
         $orderItemDiscountAdjustmentAdder
-            ->add($secondItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, Argument::type('string'), 'Custom order discount', -600)
+            ->add($secondItem->reveal(), AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT . '_100', 'Custom order discount', -600)
             ->shouldBeCalled()
         ;
 

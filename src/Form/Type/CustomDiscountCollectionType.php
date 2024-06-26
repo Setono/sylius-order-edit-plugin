@@ -40,28 +40,30 @@ abstract class CustomDiscountCollectionType extends AbstractType
             'entry_options' => [
                 'label' => false,
             ],
-            'getter' => function (AdjustableInterface &$adjustable): array {
-                Assert::isInstanceOfAny($adjustable, [OrderInterface::class, OrderItemInterface::class]);
-                /** @var Collection $adjustments */
-                $adjustments = $adjustable->getAdjustmentsRecursively($this->adjustmentType);
+            'getter' =>
+                /** @param OrderItemInterface|OrderInterface $adjustable */
+                function (AdjustableInterface &$adjustable): array {
+                    Assert::isInstanceOfAny($adjustable, [OrderInterface::class, OrderItemInterface::class]);
+                    /** @var Collection $adjustments */
+                    $adjustments = $adjustable->getAdjustmentsRecursively($this->adjustmentType);
 
-                $notDistributedAdjustments = [];
-                /** @var AdjustmentInterface $adjustment */
-                foreach ($adjustments as $adjustment) {
-                    /** @var string $originCode */
-                    $originCode = $adjustment->getOriginCode();
+                    $notDistributedAdjustments = [];
+                    /** @var AdjustmentInterface $adjustment */
+                    foreach ($adjustments as $adjustment) {
+                        /** @var string $originCode */
+                        $originCode = $adjustment->getOriginCode();
 
-                    if (isset($notDistributedAdjustments[$originCode])) {
-                        $notDistributedAdjustments[$originCode] += ($adjustment->getAmount()) * -1;
+                        if (isset($notDistributedAdjustments[$originCode])) {
+                            $notDistributedAdjustments[$originCode] += ($adjustment->getAmount()) * -1;
 
-                        continue;
+                            continue;
+                        }
+
+                        $notDistributedAdjustments[$originCode] = ($adjustment->getAmount()) * -1;
                     }
 
-                    $notDistributedAdjustments[$originCode] = ($adjustment->getAmount()) * -1;
-                }
-
-                return $notDistributedAdjustments;
-            },
+                    return $notDistributedAdjustments;
+                },
             'setter' => function (AdjustableInterface &$adjustable, array $discounts): void {
                 $this->setDiscounts($adjustable, $discounts);
             },
