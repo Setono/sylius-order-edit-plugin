@@ -61,3 +61,8 @@
     <h4 class="ui dividing header">{{ 'setono_sylius_order_edit.ui.order_discounts'|trans }}</h4>
     {{ form_widget(form.discounts) }}
 </div>
+<div class="ui segment big">
+    <h4 class="ui dividing header">{{ 'sylius.ui.order_summary'|trans }}</h4>
+    <br/>{{ 'sylius.ui.items_total'|trans }}: {{ money.format(order.itemsTotal, order.currencyCode) }}
+    <br/><br/>{{ 'sylius.ui.order_total'|trans }}: {{ money.format(order.total, order.currencyCode) }}
+</div>
