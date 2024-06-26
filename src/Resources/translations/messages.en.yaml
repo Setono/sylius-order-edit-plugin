@@ -5,3 +5,5 @@ setono_sylius_order_edit:
         discounts: Discounts
         order_discounts: Order discounts
         order_items: Order items
+        store_notes: Store notes
+        store_notes_placeholder: If you want to add a note regarding your changes, you can do it here. The customer will not be able to see this note...

@@ -7,6 +7,7 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Functional;
 use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
+use Setono\SyliusOrderEditPlugin\Tests\Application\Entity\Order;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
@@ -15,7 +16,6 @@ use Sylius\Bundle\ApiBundle\Command\Checkout\CompleteOrder;
 use Sylius\Bundle\ApiBundle\Command\Checkout\UpdateCart;
 use Sylius\Component\Core\Model\Address;
 use Sylius\Component\Core\Model\AdjustmentInterface;
-use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
@@ -190,6 +190,24 @@ final class OrderUpdateTest extends WebTestCase
         );
     }
 
+    public function testItAllowsToAddStoreNotes(): void
+    {
+        $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0', 100);
+
+        $order = $this->placeOrderProgramatically(quantity: 5);
+
+        $this->loginAsAdmin();
+        $this->addStoreNotes($order->getId(), 'store notes');
+
+        self::assertResponseStatusCodeSame(302);
+
+        $this->getEntityManager()->clear();
+
+        /** @var EditableOrderInterface $order */
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame('store notes', $order->getStoreNotes());
+    }
+
     private function placeOrderProgramatically(
         string $variantCode = '000F_office_grey_jeans-variant-0',
         int $quantity = 1,
@@ -346,6 +364,22 @@ final class OrderUpdateTest extends WebTestCase
         );
     }
 
+    private function addStoreNotes(int $orderId, ?string $storeNotes): void
+    {
+        static::$client->request(
+            'PATCH',
+            sprintf('/admin/orders/%d/update-and-process', $orderId),
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'sylius_order' => [
+                    'storeNotes' => $storeNotes,
+                ],
+            ]),
+        );
+    }
+
     private function getOrderRepository(): OrderRepositoryInterface
     {
         return self::getContainer()->get('sylius.repository.order');
@@ -361,12 +395,12 @@ final class OrderUpdateTest extends WebTestCase
         return self::getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    private function getInitialTotal(Order|InitialTotalAwareOrderInterface $order)
+    private function getInitialTotal(Order $order): int
     {
         return $order->getInitialTotal() - $order->getAdjustmentsTotalRecursively(AdjustmentInterface::TAX_ADJUSTMENT);
     }
 
-    private function getResultTotal(Order|InitialTotalAwareOrderInterface $order)
+    private function getResultTotal(Order $order): int
     {
         return $order->getTotal() - $order->getAdjustmentsTotalRecursively(AdjustmentInterface::TAX_ADJUSTMENT);
     }
