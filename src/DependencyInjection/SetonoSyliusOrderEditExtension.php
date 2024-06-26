@@ -51,6 +51,13 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
                         ],
                     ],
                 ],
+                'sylius.admin.order.show.summary' => [
+                    'blocks' => [
+                        'store_notes' => [
+                            'template' => '@SetonoSyliusOrderEditPlugin/admin/order/show/_store_notes.html.twig',
+                        ],
+                    ],
+                ],
             ],
         ]);
 

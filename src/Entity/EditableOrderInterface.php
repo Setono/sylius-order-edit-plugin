@@ -13,4 +13,8 @@ interface EditableOrderInterface extends OrderInterface
     public function getInitialTotal(): int;
 
     public function setInitialTotal(int $initialTotal): void;
+
+    public function getStoreNotes(): ?string;
+
+    public function setStoreNotes(?string $storeNotes): void;
 }

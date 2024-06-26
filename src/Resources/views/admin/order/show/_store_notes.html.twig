@@ -1,0 +1,10 @@
+{% if order.storeNotes is not null %}
+    <div style="margin-top: 1rem">
+        <h4 class="ui top attached styled header">
+            {{ 'setono_sylius_order_edit.ui.store_notes'|trans }}
+        </h4>
+        <div class="ui attached segment text-break">
+            {{ order.storeNotes }}
+        </div>
+    </div>
+{% endif %}

@@ -9,6 +9,7 @@ use Setono\SyliusOrderEditPlugin\Form\Type\OrderItemCollectionType;
 use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
 use Sylius\Component\Core\Model\OrderInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -17,6 +18,14 @@ final class OrderTypeExtension extends AbstractTypeExtension
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder->add('storeNotes', TextareaType::class, [
+            'required' => false,
+            'label' => 'setono_sylius_order_edit.ui.store_notes',
+            'attr' => [
+                'placeholder' => 'setono_sylius_order_edit.ui.store_notes_placeholder',
+            ],
+        ]);
+
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
             $form = $event->getForm();
             /** @var OrderInterface $order */
@@ -26,15 +35,14 @@ final class OrderTypeExtension extends AbstractTypeExtension
                 ->add('items', OrderItemCollectionType::class, [
                     'entry_options' => ['currency_code' => $order->getCurrencyCode()],
                 ])
+                ->add('discounts', OrderDiscountCollectionType::class, [
+                    'property_path' => 'adjustments',
+                    'entry_options' => [
+                        'currency' => $order->getCurrencyCode(),
+                    ],
+                    'button_add_label' => 'setono_sylius_order_edit.ui.add_discount',
+                ])
             ;
-
-            $form->add('discounts', OrderDiscountCollectionType::class, [
-                'property_path' => 'adjustments',
-                'entry_options' => [
-                    'currency' => $order->getCurrencyCode(),
-                ],
-                'button_add_label' => 'setono_sylius_order_edit.ui.add_discount',
-            ]);
         });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {

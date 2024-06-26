@@ -15,6 +15,10 @@ trait EditableOrderTrait
     #[ORM\Column(type: 'integer')]
     private int $initialTotal = 0;
 
+    /** @ORM\Column(type="text", nullable=true) */
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $storeNotes = null;
+
     public function isAlreadyPaid(): bool
     {
         return $this->getPaymentState() === OrderPaymentStates::STATE_PAID;
@@ -28,5 +32,15 @@ trait EditableOrderTrait
     public function setInitialTotal(int $initialTotal): void
     {
         $this->initialTotal = $initialTotal;
+    }
+
+    public function getStoreNotes(): ?string
+    {
+        return $this->storeNotes;
+    }
+
+    public function setStoreNotes(?string $storeNotes): void
+    {
+        $this->storeNotes = $storeNotes;
     }
 }
