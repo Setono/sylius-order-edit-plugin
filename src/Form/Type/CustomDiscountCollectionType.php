@@ -44,18 +44,10 @@ abstract class CustomDiscountCollectionType extends AbstractType
                 }, $adjustments);
             },
             'setter' => function (AdjustableInterface &$adjustable, array $discounts): void {
-                $adjustable->removeAdjustments($this->adjustmentType);
-
-                /** @var int $discount */
-                foreach ($discounts as $discount) {
-                    $adjustment = $this->adjustmentFactory->createWithData(
-                        $this->adjustmentType,
-                        $this->label,
-                        -1 * $discount,
-                    );
-                    $adjustable->addAdjustment($adjustment);
-                }
+                $this->setDiscounts($adjustable, $discounts);
             },
         ]);
     }
+
+    abstract public function setDiscounts(AdjustableInterface $adjustable, array $discounts): void;
 }

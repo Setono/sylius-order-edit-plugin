@@ -116,7 +116,7 @@ final class OrderUpdateTest extends WebTestCase
         /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotalWithoutTaxes - 200, $this->getResultTotal($order));
-        self::assertSame(-200, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
+        self::assertSame(-200, $order->getAdjustmentsTotalRecursively(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
     }
 
     public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
@@ -157,10 +157,9 @@ final class OrderUpdateTest extends WebTestCase
         /** @var OrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotalWithoutTaxes - 100, $this->getResultTotal($order));
-        self::assertSame(0, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
         self::assertSame(
             -100,
-            $order->getItems()->first()->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
+            $order->getItems()->first()->getAdjustmentsTotalRecursively(AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
         );
     }
 
@@ -183,10 +182,9 @@ final class OrderUpdateTest extends WebTestCase
         /** @var EditableOrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotalWithoutTaxes - 200, $this->getResultTotal($order));
-        self::assertSame(0, $order->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT));
         self::assertSame(
             -200,
-            $order->getItems()->first()->getAdjustmentsTotal(AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
+            $order->getItems()->first()->getAdjustmentsTotalRecursively(AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT),
         );
     }
 
