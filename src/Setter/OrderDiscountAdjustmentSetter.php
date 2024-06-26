@@ -6,28 +6,25 @@ namespace Setono\SyliusOrderEditPlugin\Setter;
 
 use Setono\SyliusOrderEditPlugin\Adder\DiscountAdjustmentsAdderInterface;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
-use Sylius\Component\Core\Distributor\MinimumPriceDistributorInterface;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Distributor\IntegerDistributorInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
 
 final class OrderDiscountAdjustmentSetter implements OrderDiscountAdjustmentSetterInterface
 {
     public function __construct(
-        private readonly MinimumPriceDistributorInterface $minimumPriceDistributor,
+        private readonly IntegerDistributorInterface $integerDistributor,
         private readonly DiscountAdjustmentsAdderInterface $orderItemDiscountAdjustmentAdder,
     ) {
     }
 
     public function set(OrderInterface $order, int $discount): void
     {
-        /** @var ChannelInterface $channel */
-        $channel = $order->getChannel();
         $items = $order->getItems();
         /** @var int $orderId */
         $orderId = $order->getId();
 
-        $distributedPrices = $this->minimumPriceDistributor->distribute($items->toArray(), $discount, $channel, true);
+        $distributedPrices = $this->integerDistributor->distribute($discount, $items->count());
 
         /** @var int $distribution */
         foreach ($distributedPrices as $i => $distribution) {

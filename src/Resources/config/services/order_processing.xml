@@ -70,7 +70,7 @@
             id="setono_sylius_order_edit.setter.order_discount_adjustment"
             class="Setono\SyliusOrderEditPlugin\Setter\OrderDiscountAdjustmentSetter"
         >
-            <argument type="service" id="Sylius\Component\Core\Distributor\MinimumPriceDistributorInterface" />
+            <argument type="service" id="sylius.integer_distributor" />
             <argument type="service" id="setono_sylius_order_edit.adder.discount_adjustments" />
         </service>
     </services>
