@@ -36,7 +36,7 @@ final class DiscountAdjustmentsAdderTest extends TestCase
 
         $item->getQuantity()->willReturn(3);
         $item->getUnits()->willReturn(new ArrayCollection(
-            [$firstUnit->reveal(), $secondUnit->reveal(), $thirdUnit->reveal()]
+            [$firstUnit->reveal(), $secondUnit->reveal(), $thirdUnit->reveal()],
         ));
 
         $integerDistributor->distribute(-1000, 3)->willReturn([-333, -333, -334]);
@@ -50,7 +50,7 @@ final class DiscountAdjustmentsAdderTest extends TestCase
             ->willReturn($firstAdjustment->reveal(), $secondAdjustment->reveal())
         ;
         $adjustmentFactory
-            ->createWithData(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'Custom discount', -334,)
+            ->createWithData(AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT, 'Custom discount', -334, )
             ->willReturn($thirdAdjustment->reveal())
         ;
 

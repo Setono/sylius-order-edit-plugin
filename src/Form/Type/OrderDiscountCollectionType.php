@@ -20,7 +20,6 @@ final class OrderDiscountCollectionType extends CustomDiscountCollectionType
         parent::__construct($adjustmentFactory, 'Custom discount', AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT);
     }
 
-    /** @param OrderInterface $adjustable */
     public function setDiscounts(AdjustableInterface $adjustable, array $discounts): void
     {
         Assert::isInstanceOf($adjustable, OrderInterface::class);

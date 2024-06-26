@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Adder;
 
 use Sylius\Component\Core\Distributor\IntegerDistributorInterface;
+use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;
+use Sylius\Component\Core\Model\OrderItemUnitInterface;
 use Sylius\Component\Order\Factory\AdjustmentFactoryInterface;
 
 final class DiscountAdjustmentsAdder implements DiscountAdjustmentsAdderInterface
@@ -21,14 +23,18 @@ final class DiscountAdjustmentsAdder implements DiscountAdjustmentsAdderInterfac
         $discounts = $this->integerDistributor->distribute($discount, $orderItem->getQuantity());
         $units = $orderItem->getUnits();
 
+        /** @var int $discount */
         foreach ($discounts as $i => $discount) {
+            /** @var AdjustmentInterface $adjustment */
             $adjustment = $this->adjustmentFactory->createWithData(
                 $adjustmentType,
                 'Custom discount',
                 $discount,
             );
 
-            $units->get($i)->addAdjustment($adjustment);
+            /** @var OrderItemUnitInterface $unit */
+            $unit = $units->get($i);
+            $unit->addAdjustment($adjustment);
         }
     }
 }
