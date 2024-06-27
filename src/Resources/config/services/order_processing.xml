@@ -57,5 +57,21 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="setono_sylius_order_edit.event_bus" />
         </service>
+
+        <service
+            id="setono_sylius_order_edit.adder.discount_adjustments"
+            class="Setono\SyliusOrderEditPlugin\Adder\DiscountAdjustmentsAdder"
+        >
+            <argument type="service" id="sylius.integer_distributor" />
+            <argument type="service" id="sylius.factory.adjustment" />
+        </service>
+
+        <service
+            id="setono_sylius_order_edit.setter.order_discount_adjustment"
+            class="Setono\SyliusOrderEditPlugin\Setter\OrderDiscountAdjustmentSetter"
+        >
+            <argument type="service" id="sylius.integer_distributor" />
+            <argument type="service" id="setono_sylius_order_edit.adder.discount_adjustments" />
+        </service>
     </services>
 </container>

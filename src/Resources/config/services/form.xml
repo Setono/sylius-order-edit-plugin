@@ -3,12 +3,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- Form types -->
-        <service id="setono_sylius_order_edit.form.type.order_item"
-                 class="Setono\SyliusOrderEditPlugin\Form\Type\OrderItemType">
+        <service
+            id="setono_sylius_order_edit.form.type.order_item"
+            class="Setono\SyliusOrderEditPlugin\Form\Type\OrderItemType"
+        >
             <argument type="service" id="sylius.order_item_quantity_modifier"/>
             <argument>%sylius.model.order_item.class%</argument>
             <argument>%sylius.form.type.order_item.validation_groups%</argument>
-
             <tag name="form.type"/>
         </service>
 
@@ -17,6 +18,7 @@
             class="Setono\SyliusOrderEditPlugin\Form\Type\OrderDiscountCollectionType"
         >
             <argument type="service" id="sylius.factory.adjustment" />
+            <argument type="service" id="setono_sylius_order_edit.setter.order_discount_adjustment" />
             <tag name="form.type"/>
         </service>
 
@@ -25,12 +27,15 @@
             class="Setono\SyliusOrderEditPlugin\Form\Type\OrderItemDiscountCollectionType"
         >
             <argument type="service" id="sylius.factory.adjustment" />
+            <argument type="service" id="setono_sylius_order_edit.adder.discount_adjustments" />
             <tag name="form.type"/>
         </service>
 
         <!-- Form type extensions -->
-        <service id="setono_sylius_order_edit.form.extension.order"
-                 class="Setono\SyliusOrderEditPlugin\Form\Extension\OrderTypeExtension">
+        <service
+            id="setono_sylius_order_edit.form.extension.order"
+            class="Setono\SyliusOrderEditPlugin\Form\Extension\OrderTypeExtension"
+        >
             <tag name="form.type_extension"/>
         </service>
     </services>

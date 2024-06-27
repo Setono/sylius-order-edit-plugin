@@ -3,12 +3,14 @@
 {% set orderPromotionAdjustment = constant('Sylius\\Component\\Core\\Model\\AdjustmentInterface::ORDER_PROMOTION_ADJUSTMENT') %}
 {% set unitPromotionAdjustment = constant('Sylius\\Component\\Core\\Model\\AdjustmentInterface::ORDER_UNIT_PROMOTION_ADJUSTMENT') %}
 {% set adminOrderDiscountAdjustment = constant('Setono\\SyliusOrderEditPlugin\\Model\\AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT') %}
+{% set adminOrderItemDiscountAdjustment = constant('Setono\\SyliusOrderEditPlugin\\Model\\AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT') %}
 
 <tr>
     <td colspan="5" id="promotion-discounts" class="promotion-disabled">
         {% set orderPromotionAdjustments = sylius_aggregate_adjustments(order.getAdjustmentsRecursively(orderPromotionAdjustment)) %}
         {% set unitPromotionAdjustments = sylius_aggregate_adjustments(order.getAdjustmentsRecursively(unitPromotionAdjustment)) %}
         {% set adminOrderDiscountAdjustments = sylius_aggregate_adjustments(order.getAdjustmentsRecursively(adminOrderDiscountAdjustment)) %}
+        {% set adminOrderItemDiscountAdjustments = sylius_aggregate_adjustments(order.getAdjustmentsRecursively(adminOrderItemDiscountAdjustment)) %}
         {% set promotionAdjustments = orderPromotionAdjustments|merge(unitPromotionAdjustments)|merge(adminOrderDiscountAdjustments) %}
         {% if not promotionAdjustments is empty %}
             <div class="ui relaxed divided list">
@@ -28,7 +30,8 @@
         {% set orderPromotionTotal = order.getAdjustmentsTotalRecursively(orderPromotionAdjustment) %}
         {% set unitPromotionTotal = order.getAdjustmentsTotalRecursively(unitPromotionAdjustment) %}
         {% set adminOrderDiscountTotal = order.getAdjustmentsTotalRecursively(adminOrderDiscountAdjustment) %}
+        {% set adminOrderItemDiscountTotal = order.getAdjustmentsTotalRecursively(adminOrderItemDiscountAdjustment) %}
         <strong>{{ 'sylius.ui.promotion_total'|trans }}</strong>:
-        {{ money.format(orderPromotionTotal + unitPromotionTotal + adminOrderDiscountTotal, order.currencyCode) }}
+        {{ money.format(orderPromotionTotal + unitPromotionTotal + adminOrderDiscountTotal + adminOrderItemDiscountTotal, order.currencyCode) }}
     </td>
 </tr>

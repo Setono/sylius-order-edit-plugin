@@ -2,6 +2,7 @@
 
 {% set orderPromotionAdjustment = constant('Sylius\\Component\\Core\\Model\\AdjustmentInterface::ORDER_PROMOTION_ADJUSTMENT') %}
 {% set unitPromotionAdjustment = constant('Sylius\\Component\\Core\\Model\\AdjustmentInterface::ORDER_UNIT_PROMOTION_ADJUSTMENT') %}
+{% set adminOrderDiscountAdjustment = constant('Setono\\SyliusOrderEditPlugin\\Model\\AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT') %}
 {% set adminOrderItemDiscountAdjustment = constant('Setono\\SyliusOrderEditPlugin\\Model\\AdjustmentTypes::SETONO_ADMIN_ORDER_ITEM_DISCOUNT') %}
 {% set shippingAdjustment = constant('Sylius\\Component\\Core\\Model\\AdjustmentInterface::SHIPPING_ADJUSTMENT') %}
 {% set taxAdjustment = constant('Sylius\\Component\\Core\\Model\\AdjustmentInterface::TAX_ADJUSTMENT') %}
@@ -23,13 +24,22 @@
         {{ money.format(item.unitPrice, order.currencyCode) }}
     </td>
     <td class="right aligned unit-discount">
-        {{ money.format(item.units.first.adjustmentsTotal(unitPromotionAdjustment), order.currencyCode) }}
+        {{ money.format(
+            item.units.first.adjustmentsTotal(unitPromotionAdjustment) + item.units.first.adjustmentsTotal(adminOrderItemDiscountAdjustment),
+            order.currencyCode
+        ) }}
     </td>
     <td class="right aligned unit-order-discount">
-        <span style="font-style: italic;">~ {{ money.format(item.units.first.adjustmentsTotal(orderPromotionAdjustment), order.currencyCode) }}</span>
+        <span style="font-style: italic;">~ {{ money.format(
+            item.units.first.adjustmentsTotal(orderPromotionAdjustment) + item.units.first.adjustmentsTotal(adminOrderDiscountAdjustment),
+            order.currencyCode
+        ) }}</span>
     </td>
     <td class="right aligned discounted-unit-price">
-        {{ money.format(item.fullDiscountedUnitPrice, order.currencyCode) }}
+        {{ money.format(
+            item.fullDiscountedUnitPrice + item.units.first.adjustmentsTotal(adminOrderItemDiscountAdjustment) + item.units.first.adjustmentsTotal(adminOrderDiscountAdjustment),
+            order.currencyCode
+        ) }}
     </td>
     <td class="right aligned quantity">
         {{ item.quantity }}
@@ -49,14 +59,3 @@
         {{ money.format(item.total, order.currencyCode) }}
     </td>
 </tr>
-{% set discounts = item.getAdjustments(adminOrderItemDiscountAdjustment) %}
-{% if discounts is not empty %}
-<tr>
-    <td colspan="9">
-        <strong>{{ 'setono_sylius_order_edit.ui.discounts'|trans }}:</strong>
-        {% for discount in discounts %}
-            {{ money.format(discount.amount, order.currencyCode) }}{% if not loop.last %}, {% endif %}
-        {% endfor %}
-    </td>
-</tr>
-{% endif %}
