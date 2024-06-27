@@ -21,8 +21,7 @@ final class OrderDiscountAdjustmentSetter implements OrderDiscountAdjustmentSett
     public function set(OrderInterface $order, int $discount): void
     {
         $items = $order->getItems();
-        /** @var int $orderId */
-        $orderId = $order->getId();
+        $orderId = (int) $order->getId();
 
         $distributedPrices = $this->integerDistributor->distribute($discount, $items->count());
 

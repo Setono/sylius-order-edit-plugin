@@ -1,9 +1,17 @@
 {% extends '@SyliusAdmin/Form/theme.html.twig' %}
 
 {% block _sylius_order_items_entry_widget %}
-    <tr>
+    <tr class="item">
         <td>{{ form_widget(form.quantity) }}</td>
         <td>{{ form_widget(form.variant) }}</td>
-        <td colspan="3">&nbsp;</td>
+        <td colspan="4" class="right aligned">
+            <button class="ui red labeled icon button delete-order-item" type="button">
+                <i class="icon trash"></i> {{ 'sylius.ui.delete'|trans }}
+            </button>
+        </td>
+    </tr>
+    <tr class="item-discounts">
+        {# TODO: enable disounts for new order item as well #}
+        {# <td colspan="6">{{ form_widget(form.discounts) }}</td>#}
     </tr>
 {% endblock %}
