@@ -20,15 +20,18 @@ final class OrderDiscountAdjustmentSetter implements OrderDiscountAdjustmentSett
 
     public function set(OrderInterface $order, int $discount): void
     {
-        $items = $order->getItems();
+        /** @var array<int, OrderItemInterface> $items */
+        $items = $order->getItems()->getValues();
         $orderId = (int) $order->getId();
 
-        $distributedPrices = $this->integerDistributor->distribute($discount, $items->count());
+        $distributedPrices = $this->integerDistributor->distribute($discount, count($items));
 
-        /** @var int $distribution */
+        /**
+         * @var int $i
+         * @var int $distribution
+         */
         foreach ($distributedPrices as $i => $distribution) {
-            /** @var OrderItemInterface $item */
-            $item = $items->get($i);
+            $item = $items[$i];
             $this->orderItemDiscountAdjustmentAdder->add(
                 $item,
                 AdjustmentTypes::SETONO_ADMIN_ORDER_DISCOUNT,

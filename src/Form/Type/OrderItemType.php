@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Form\Type;
 
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
+use Sylius\Bundle\ResourceBundle\Form\Type\ResourceAutocompleteChoiceType;
 use Sylius\Component\Core\Model\OrderItemInterface;
-use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Order\Modifier\OrderItemQuantityModifierInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -37,10 +36,13 @@ final class OrderItemType extends AbstractResourceType
                     $this->orderItemQuantityModifier->modify($orderItem, $quantity);
                 },
             ])
-            // TODO: change to autocomplete type for product variant
-            ->add('variant', EntityType::class, [
-                'class' => ProductVariant::class,
-                'choice_label' => 'code',
+            ->add('variant', ResourceAutocompleteChoiceType::class, [
+                'label' => false,
+                'multiple' => false,
+                'required' => true,
+                'choice_name' => 'descriptor',
+                'choice_value' => 'id',
+                'resource' => 'sylius.product_variant',
             ])
         ;
 
