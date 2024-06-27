@@ -1,6 +1,6 @@
 document.querySelectorAll('button.delete-order-item').forEach((button) => {
     button.addEventListener('click', (event) => {
-        var row = event.currentTarget.parentElement.parentElement;
+        var row = event.currentTarget.closest('tr');
         row.nextElementSibling.remove();
         row.remove();
     });
@@ -25,7 +25,7 @@ document.querySelector('button.add-order-item').addEventListener('click', (event
     var rows = orderItemTable.querySelectorAll('form[name="sylius_order"] tbody tr');
     var lastItemRowDeleteButton = rows[rows.length - 2].querySelector('button.delete-order-item');
     lastItemRowDeleteButton.addEventListener('click', (event) => {
-        var row = event.currentTarget.parentElement.parentElement;
+        var row = event.currentTarget.closest('tr');
         row.nextElementSibling.remove();
         row.remove();
     });
