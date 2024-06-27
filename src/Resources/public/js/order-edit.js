@@ -23,7 +23,11 @@ document.querySelector('button.add-order-item').addEventListener('click', (event
     orderItemTable.dataset.index++;
 
     var rows = orderItemTable.querySelectorAll('form[name="sylius_order"] tbody tr');
-    var lastItemRowDeleteButton = rows[rows.length - 2].querySelector('button.delete-order-item');
+    var lastItemRow = rows[rows.length - 2];
+    var lastItemRowDeleteButton = lastItemRow.querySelector('button.delete-order-item');
+
+    $(lastItemRow).find('.sylius-autocomplete').autoComplete();
+
     lastItemRowDeleteButton.addEventListener('click', (event) => {
         var row = event.currentTarget.closest('tr');
         row.nextElementSibling.remove();
