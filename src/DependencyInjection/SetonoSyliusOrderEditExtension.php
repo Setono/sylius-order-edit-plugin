@@ -64,7 +64,7 @@ final class SetonoSyliusOrderEditExtension extends Extension implements PrependE
         $container->prependExtensionConfig('sylius_grid', [
             'templates' => [
                 'action' => [
-                    'edit_order' => '@SetonoSyliusOrderEditPlugin/admin/order/grid/editOrder.html.twig',
+                    'edit_order' => '@SetonoSyliusOrderEditPlugin/admin/order/grid/edit_order.html.twig',
                 ],
             ],
         ]);

@@ -1,0 +1,5 @@
+{% if data.shippingState == constant('Sylius\\Component\\Core\\OrderShippingStates::STATE_READY') %}
+    <a class="ui labeled icon purple button " href="{{ path(options.link.route, options.link.parameters) }}">
+        <i class="icon pencil"></i> {{ 'sylius.ui.edit'|trans }}
+    </a>
+{% endif %}
