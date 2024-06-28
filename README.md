@@ -8,38 +8,11 @@
 
 Edit orders inside your admin interface.
 
-## Important (read before using)
-
-Editing orders is a big thing and can have a lot of implications. Before you use this plugin,
-there are some things you should check and/or be aware of:
-
-1. **State machine**: Right now this plugin only works if you use the Winzou State Machine as your Sylius state machine.
-   You can check this by running `php bin/console debug:container sylius.resource_controller.state_machine`.
-   The `class` should be `Sylius\Bundle\ResourceBundle\Controller\StateMachine`.
-2. **Flow**: The flow of editing an order looks like this:
-   1. You press edit in the order overview.
-   2. You edit the order and click `Save changes`.
-   3. The order is now transitioned to the `cart` state.
-   4. The `sylius.order_processing.order_processor` service is run.
-   5. The order is transitioned to the `new` state.
-   6. The order is saved
-   
-    You can see this flow implemented in the `\Setono\SyliusOrderEditPlugin\Controller\ResourceUpdateHandler` class.
-
-What does this mean for you?
-
-First of all, check your state machine implementation. If you don't use the Winzou State Machine, you can't use this plugin.
-
-Secondly, when transitioning the order from `new` to `cart` and back again, the callbacks on the state machine are triggered.
-This plugin handles the callbacks added by Sylius, but if you've made any custom callbacks, you need to make sure they are compatible with this flow.
-
 ## Install
 
-TODO
-
-## Usage
-
-TODO
+```shell
+composer require setono/sylius-order-edit-plugin
+```
 
 [ico-version]: https://poser.pugx.org/setono/sylius-order-edit-plugin/v/stable
 [ico-license]: https://poser.pugx.org/setono/sylius-order-edit-plugin/license
