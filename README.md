@@ -14,6 +14,64 @@ Edit orders inside your admin interface.
 composer require setono/sylius-order-edit-plugin
 ```
 
+### Import routing
+
+```yaml
+# config/routes/setono_sylius_order_edit.yaml
+setono_sylius_order_edit:
+    resource: "@SetonoSyliusOrderEditPlugin/Resources/config/routes.yaml"
+```
+
+### Extend the `Order` entity
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Entity\Order;
+
+use Doctrine\ORM\Mapping as ORM;
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
+use Setono\SyliusOrderEditPlugin\Entity\EditableOrderTrait;
+use Sylius\Component\Core\Model\Order as BaseOrder;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'sylius_order')]
+class Order extends BaseOrder implements EditableOrderInterface
+{
+    use EditableOrderTrait;
+}
+```
+
+### Update your database schema
+
+```shell
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+```
+
+The plugin adds a new field to the `Order` entity named `initialTotal` which will contain the order total and is used when editing orders.
+
+To set the `initialTotal` field for existing orders, you can add the following to your migration:
+
+```php
+<?php
+// ...
+
+public function up(Schema $schema): void
+{
+    // ...
+    $this->addSql('UPDATE sylius_order SET initial_total = total');
+}
+
+// ...
+```
+
+### Done!
+
+You should be able to edit orders in your admin interface. Enjoy :tada:
+
 [ico-version]: https://poser.pugx.org/setono/sylius-order-edit-plugin/v/stable
 [ico-license]: https://poser.pugx.org/setono/sylius-order-edit-plugin/license
 [ico-github-actions]: https://github.com/Setono/sylius-order-edit-plugin/workflows/build/badge.svg
