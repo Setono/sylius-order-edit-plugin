@@ -1,0 +1,17 @@
+# Route configured in Sylius 1.11+
+# Check out https://github.com/Sylius/Sylius/blob/1.11/src/Sylius/Bundle/AdminBundle/Resources/config/routing/ajax/product_variant.yml#L26
+sylius_admin_ajax_all_product_variants_by_phrase:
+    path: /search-all
+    methods: [GET]
+    defaults:
+        _controller: sylius.controller.product_variant::indexAction
+        _format: json
+        _sylius:
+            serialization_groups: [Autocomplete]
+            permission: true
+            repository:
+                method: findByPhrase
+                arguments:
+                    phrase: $phrase
+                    locale: expr:service('sylius.context.locale').getLocaleCode()
+                    limit: "!!int %sylius.ajax.product.variant_autocomplete_limit%"
