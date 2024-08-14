@@ -14,4 +14,4 @@ sylius_admin_ajax_all_product_variants_by_phrase:
                 arguments:
                     phrase: $phrase
                     locale: expr:service('sylius.context.locale').getLocaleCode()
-                    limit: "!!int %sylius.ajax.product.variant_autocomplete_limit%"
+                    limit: 25
