@@ -15,3 +15,16 @@ sylius_admin_ajax_all_product_variants_by_phrase:
                     phrase: $phrase
                     locale: expr:service('sylius.context.locale').getLocaleCode()
                     limit: 25
+
+sylius_admin_ajax_all_product_variants_by_codes:
+    path: /all
+    methods: [GET]
+    defaults:
+        _controller: sylius.controller.product_variant:indexAction
+        _format: json
+        _sylius:
+            serialization_groups: [Autocomplete]
+            permission: true
+            repository:
+                method: findByCodes
+                arguments: [$code]
