@@ -22,12 +22,14 @@ setono_sylius_order_edit:
     resource: "@SetonoSyliusOrderEditPlugin/Resources/config/routes.yaml"
 ```
 
-If you're using Sylius 1.10, import also additional product variant route:
+If you're using Sylius <=1.10, also import additional product variant routes:
 
 ```yaml
 setono_sylius_order_edit_product_variant:
     resource: "@SetonoSyliusOrderEditPlugin/Resources/config/routes/product_variant.yaml"
 ```
+
+and remember to add the referenced `ProductVariantRepository` methods (`findByCodes` and `findByPhrase`).
 
 ### Extend the `Order` entity
 
