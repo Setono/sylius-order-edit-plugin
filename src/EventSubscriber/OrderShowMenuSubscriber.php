@@ -11,6 +11,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 final class OrderShowMenuSubscriber implements EventSubscriberInterface
 {
+    private const MENU_ITEM_KEY = 'edit';
+
     public static function getSubscribedEvents(): array
     {
         return [OrderShowMenuBuilder::EVENT_NAME => 'addEditButton'];
@@ -27,7 +29,7 @@ final class OrderShowMenuSubscriber implements EventSubscriberInterface
 
         $menu
             ->addChild(
-                'edit',
+                self::MENU_ITEM_KEY,
                 [
                     'route' => 'sylius_admin_order_update',
                     'routeParameters' => ['id' => $order->getId()],
@@ -39,6 +41,12 @@ final class OrderShowMenuSubscriber implements EventSubscriberInterface
             ->setLabelAttribute('color', 'purple')
         ;
 
-        $menu->reorderChildren(['edit', 'order_history', 'cancel']);
+        $sort = [self::MENU_ITEM_KEY, 'order_history', 'cancel'];
+        $rest = array_diff(array_keys($menu->getChildren()), $sort);
+
+        try {
+            $event->getMenu()->reorderChildren(array_merge($sort, $rest));
+        } catch (\InvalidArgumentException) {
+        }
     }
 }
