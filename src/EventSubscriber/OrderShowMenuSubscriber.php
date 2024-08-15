@@ -41,11 +41,11 @@ final class OrderShowMenuSubscriber implements EventSubscriberInterface
             ->setLabelAttribute('color', 'purple')
         ;
 
-        $sort = [self::MENU_ITEM_KEY, 'order_history', 'cancel'];
-        $rest = array_diff(array_keys($menu->getChildren()), $sort);
+        $sort = array_keys($menu->getChildren());
+        array_unshift($sort, self::MENU_ITEM_KEY);
 
         try {
-            $event->getMenu()->reorderChildren(array_merge($sort, $rest));
+            $event->getMenu()->reorderChildren($sort);
         } catch (\InvalidArgumentException) {
         }
     }
