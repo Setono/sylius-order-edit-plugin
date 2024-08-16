@@ -1,5 +1,5 @@
 setono_sylius_order_edit:
     order_update:
-        general_error: 'An error occurred while updating the order'
+        general_error: 'An error occurred while updating the order: %error%'
         total_error: 'Order should not have bigger total than before editing'
         success: 'Order has been successfully updated'
