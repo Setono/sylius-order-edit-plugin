@@ -41,7 +41,7 @@ final class OrderUpdateTest extends WebTestCase
 
     public function testItAllowsToChangeItemQuantity(): void
     {
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
@@ -61,7 +61,7 @@ final class OrderUpdateTest extends WebTestCase
 
     public function testItAllowsToAddAndRemoveOrderItems(): void
     {
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
@@ -87,7 +87,7 @@ final class OrderUpdateTest extends WebTestCase
 
     public function testItAllowsToAddDiscountsForTheWholeOrder(): void
     {
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
         $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
@@ -101,7 +101,7 @@ final class OrderUpdateTest extends WebTestCase
 
     public function testItAllowsToAddAndRemoveDiscountsForTheWholeOrderMultipleTimes(): void
     {
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
         $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
@@ -122,7 +122,7 @@ final class OrderUpdateTest extends WebTestCase
     public function testItDoesNotAllowToExceedTheInitialOrderTotal(): void
     {
         $this->makeVariantTrackedWithStockAndPrice('111F_patched_jeans_with_fancy_badges-variant-0', 100);
-        $order = $this->placeOrderProgramatically(quantity: 1);
+        $order = $this->placeOrderProgrammatically(quantity: 1);
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->getVariantRepository()->findOneBy(['code' => '000F_office_grey_jeans-variant-0']);
@@ -146,7 +146,7 @@ final class OrderUpdateTest extends WebTestCase
     {
         $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0', 100);
 
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
         $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
@@ -167,7 +167,7 @@ final class OrderUpdateTest extends WebTestCase
     {
         $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0', 100);
 
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
         $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
 
         $this->loginAsAdmin();
@@ -192,7 +192,7 @@ final class OrderUpdateTest extends WebTestCase
     {
         $this->makeVariantTrackedWithStockAndPrice('000F_office_grey_jeans-variant-0', 100);
 
-        $order = $this->placeOrderProgramatically(quantity: 5);
+        $order = $this->placeOrderProgrammatically(quantity: 5);
 
         $this->loginAsAdmin();
         $this->addStoreNotes($order->getId(), 'store notes');
@@ -206,7 +206,7 @@ final class OrderUpdateTest extends WebTestCase
         self::assertSame('store notes', $order->getStoreNotes());
     }
 
-    private function placeOrderProgramatically(
+    private function placeOrderProgrammatically(
         string $variantCode = '000F_office_grey_jeans-variant-0',
         int $quantity = 1,
     ): EditableOrderInterface {
