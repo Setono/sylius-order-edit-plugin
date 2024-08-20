@@ -7,8 +7,7 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\Checker;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusOrderEditPlugin\Checker\OrderPaymentEditionChecker;
-use Sylius\Component\Core\Model\OrderInterface;
-use Sylius\Component\Core\OrderPaymentStates;
+use Sylius\Component\Core\Model\Order;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -16,56 +15,38 @@ final class OrderPaymentEditionCheckerTest extends TestCase
 {
     use ProphecyTrait;
 
-    public function testItSaysOrderPaymentsShouldNotBeEditedIfTheRouteIsOrderEditAndThePaymentIsAlreadyProcessed(): void
+    public function testItSaysOrderPaymentsShouldNotBeEditedIfTheRouteIsOrderEdit(): void
     {
         $requestStack = $this->prophesize(RequestStack::class);
         $request = new Request([], [], ['_route' => 'setono_sylius_order_edit_admin_update']);
         $requestStack->getCurrentRequest()->willReturn($request);
 
         $checker = new OrderPaymentEditionChecker($requestStack->reveal());
+        $order = new Order();
 
-        $order = $this->prophesize(OrderInterface::class);
-        $order->getPaymentState()->willReturn(OrderPaymentStates::STATE_AUTHORIZED);
-
-        self::assertFalse($checker->shouldOrderPaymentBeEdited($order->reveal()));
+        self::assertFalse($checker->shouldOrderPaymentBeEdited($order));
     }
 
-    public function testItSaysOrderPaymentShouldBeEditedItTheRouteIsOrderEditButOrderIsAwaitingPayment(): void
-    {
-        $requestStack = $this->prophesize(RequestStack::class);
-        $request = new Request([], [], ['_route' => 'setono_sylius_order_edit_admin_update']);
-        $requestStack->getCurrentRequest()->willReturn($request);
-
-        $checker = new OrderPaymentEditionChecker($requestStack->reveal());
-
-        $order = $this->prophesize(OrderInterface::class);
-        $order->getPaymentState()->willReturn(OrderPaymentStates::STATE_AWAITING_PAYMENT);
-
-        self::assertTrue($checker->shouldOrderPaymentBeEdited($order->reveal()));
-    }
-
-    public function testItSaysOrderPaymentShouldBeEditedIfItsNotOrderEditRoute(): void
+    public function testItSaysOrderPaymentCanBeEditedIfItsNotOrderEditRoute(): void
     {
         $requestStack = $this->prophesize(RequestStack::class);
         $request = new Request([], [], ['_route' => 'sylius_admin_order_any_other_route']);
         $requestStack->getCurrentRequest()->willReturn($request);
 
         $checker = new OrderPaymentEditionChecker($requestStack->reveal());
+        $order = new Order();
 
-        $order = $this->prophesize(OrderInterface::class);
-
-        self::assertTrue($checker->shouldOrderPaymentBeEdited($order->reveal()));
+        self::assertTrue($checker->shouldOrderPaymentBeEdited($order));
     }
 
-    public function testItSaysOrderPaymentShouldBeEditedIfThereIsNoCurrentRequest(): void
+    public function testItSaysOrderPaymentCanBeEditedIfThereIsNoCurrentRequest(): void
     {
         $requestStack = $this->prophesize(RequestStack::class);
         $requestStack->getCurrentRequest()->willReturn(null);
 
         $checker = new OrderPaymentEditionChecker($requestStack->reveal());
+        $order = new Order();
 
-        $order = $this->prophesize(OrderInterface::class);
-
-        self::assertTrue($checker->shouldOrderPaymentBeEdited($order->reveal()));
+        self::assertTrue($checker->shouldOrderPaymentBeEdited($order));
     }
 }

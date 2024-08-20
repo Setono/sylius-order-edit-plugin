@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusOrderEditPlugin\Checker;
 
+use Sylius\Component\Core\OrderPaymentStates;
 use Sylius\Component\Order\Model\OrderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webmozart\Assert\Assert;
 
-final class OrderPaymentEditionChecker implements OrderPaymentEditionCheckerInterface
+final class PostCheckoutOrderPaymentEditionChecker implements OrderPaymentEditionCheckerInterface
 {
     public function __construct(private readonly RequestStack $requestStack)
     {
@@ -23,6 +24,10 @@ final class OrderPaymentEditionChecker implements OrderPaymentEditionCheckerInte
             return true;
         }
 
-        return 'setono_sylius_order_edit_admin_update' !== $request->attributes->get('_route');
+        if ('setono_sylius_order_edit_admin_update' !== $request->attributes->get('_route')) {
+            return true;
+        }
+
+        return $order->getPaymentState() === OrderPaymentStates::STATE_AWAITING_PAYMENT;
     }
 }

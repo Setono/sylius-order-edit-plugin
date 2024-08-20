@@ -17,12 +17,19 @@
             decorates="sylius.order_processing.order_payment_processor.after_checkout" decoration-priority="64"
         >
             <argument type="service" id="setono_sylius_order_edit.order_processing.order_payment_processor.after_checkout.inner"/>
-            <argument type="service" id="setono_sylius_order_edit.checker.order_payment_edition"/>
+            <argument type="service" id="setono_sylius_order_edit.checker.order_payment_edition.post_checkout"/>
         </service>
 
         <service
             id="setono_sylius_order_edit.checker.order_payment_edition"
             class="Setono\SyliusOrderEditPlugin\Checker\OrderPaymentEditionChecker"
+        >
+            <argument type="service" id="request_stack" />
+        </service>
+
+        <service
+            id="setono_sylius_order_edit.checker.order_payment_edition.post_checkout"
+            class="Setono\SyliusOrderEditPlugin\Checker\PostCheckoutOrderPaymentEditionChecker"
         >
             <argument type="service" id="request_stack" />
         </service>
