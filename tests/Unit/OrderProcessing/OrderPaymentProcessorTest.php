@@ -6,45 +6,42 @@ namespace Setono\SyliusOrderEditPlugin\Tests\Unit\OrderProcessing;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Setono\SyliusOrderEditPlugin\Checker\OrderPaymentEditionCheckerInterface;
 use Setono\SyliusOrderEditPlugin\OrderProcessing\OrderPaymentProcessor;
-use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\Order;
 use Sylius\Component\Order\Processor\OrderProcessorInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 final class OrderPaymentProcessorTest extends TestCase
 {
     use ProphecyTrait;
 
-    public function testItDoesNotAllowToProcessOrderIfItsEdited(): void
+    public function testItDoesNotAllowToProcessOrderIfItShouldNotBeEdited(): void
     {
         $orderProcessor = $this->prophesize(OrderProcessorInterface::class);
-        $requestStack = $this->prophesize(RequestStack::class);
-        $request = new Request([], [], ['_route' => 'setono_sylius_order_edit_admin_update']);
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $orderPaymentEditionChecker = $this->prophesize(OrderPaymentEditionCheckerInterface::class);
 
-        $processor = new OrderPaymentProcessor($orderProcessor->reveal(), $requestStack->reveal());
+        $processor = new OrderPaymentProcessor($orderProcessor->reveal(), $orderPaymentEditionChecker->reveal());
 
-        $order = $this->prophesize(OrderInterface::class);
+        $order = new Order();
 
+        $orderPaymentEditionChecker->shouldOrderPaymentBeEdited($order)->willReturn(false);
         $orderProcessor->process($order)->shouldNotBeCalled();
 
-        $processor->process($order->reveal());
+        $processor->process($order);
     }
 
-    public function testItDoesNothingIfItsDifferentRoute(): void
+    public function testItDoesNothingIfItShouldBeEdited(): void
     {
         $orderProcessor = $this->prophesize(OrderProcessorInterface::class);
-        $requestStack = $this->prophesize(RequestStack::class);
-        $request = new Request([], [], ['_route' => 'some_other_route']);
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $orderPaymentEditionChecker = $this->prophesize(OrderPaymentEditionCheckerInterface::class);
 
-        $processor = new OrderPaymentProcessor($orderProcessor->reveal(), $requestStack->reveal());
+        $processor = new OrderPaymentProcessor($orderProcessor->reveal(), $orderPaymentEditionChecker->reveal());
 
-        $order = $this->prophesize(OrderInterface::class);
+        $order = new Order();
 
+        $orderPaymentEditionChecker->shouldOrderPaymentBeEdited($order)->willReturn(true);
         $orderProcessor->process($order)->shouldBeCalled();
 
-        $processor->process($order->reveal());
+        $processor->process($order);
     }
 }

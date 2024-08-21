@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Model\AdjustmentTypes;
 use Setono\SyliusOrderEditPlugin\Tests\Application\Entity\Order;
+use SM\Factory\FactoryInterface;
 use Sylius\Bundle\ApiBundle\Command\Cart\AddItemToCart;
 use Sylius\Bundle\ApiBundle\Command\Cart\PickupCart;
 use Sylius\Bundle\ApiBundle\Command\Checkout\ChoosePaymentMethod;
@@ -17,9 +18,11 @@ use Sylius\Bundle\ApiBundle\Command\Checkout\UpdateCart;
 use Sylius\Component\Core\Model\Address;
 use Sylius\Component\Core\Model\AdjustmentInterface;
 use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
+use Sylius\Component\Payment\PaymentTransitions;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -95,8 +98,28 @@ final class OrderUpdateTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(302);
 
+        /** @var OrderInterface $order */
         $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
         self::assertSame($initialOrderTotalWithoutTaxes - 100, $this->getResultTotal($order));
+        self::assertCount(1, $order->getPayments()->toArray());
+    }
+
+    public function testItDoesNotChangePaymentsForAlreadyPaidOrders(): void
+    {
+        $order = $this->placeOrderProgrammatically(quantity: 5, paid: true);
+        $initialOrderTotalWithoutTaxes = $this->getInitialTotal($order);
+        $initialPaymentTotal = $order->getPayments()->first()->getAmount();
+
+        $this->loginAsAdmin();
+        $this->addDiscountsToOrder($order->getId(), [1]);
+
+        self::assertResponseStatusCodeSame(302);
+
+        /** @var OrderInterface $order */
+        $order = $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
+        self::assertSame($initialOrderTotalWithoutTaxes - 100, $this->getResultTotal($order));
+        self::assertCount(1, $order->getPayments()->toArray());
+        self::assertSame($initialPaymentTotal, $order->getPayments()->first()->getAmount());
     }
 
     public function testItAllowsToAddAndRemoveDiscountsForTheWholeOrderMultipleTimes(): void
@@ -209,6 +232,7 @@ final class OrderUpdateTest extends WebTestCase
     private function placeOrderProgrammatically(
         string $variantCode = '000F_office_grey_jeans-variant-0',
         int $quantity = 1,
+        bool $paid = false,
     ): EditableOrderInterface {
         /** @var MessageBusInterface $commandBus */
         $commandBus = self::getContainer()->get('sylius.command_bus');
@@ -251,6 +275,15 @@ final class OrderUpdateTest extends WebTestCase
         $completeOrder = new CompleteOrder();
         $completeOrder->setOrderTokenValue('TOKEN');
         $commandBus->dispatch($completeOrder);
+
+        if ($paid) {
+            /** @var FactoryInterface $stateMachineFactory */
+            $stateMachineFactory = self::getContainer()->get('sm.factory');
+            /** @var PaymentInterface $payment */
+            $payment = $order->getPayments()->first();
+            $stateMachineFactory->get($payment, PaymentTransitions::GRAPH)->apply(PaymentTransitions::TRANSITION_COMPLETE);
+            self::getEntityManager()->flush();
+        }
 
         return $this->getOrderRepository()->findOneBy(['tokenValue' => 'TOKEN']);
     }
