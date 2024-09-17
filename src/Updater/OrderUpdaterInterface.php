@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusOrderEditPlugin\Updated;
+namespace Setono\SyliusOrderEditPlugin\Updater;
 
 use Setono\SyliusOrderEditPlugin\Exception\NewOrderWrongTotalException;
 use Symfony\Component\HttpFoundation\Request;

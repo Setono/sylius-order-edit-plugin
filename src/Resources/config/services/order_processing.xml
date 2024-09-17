@@ -72,8 +72,8 @@
         </service>
 
         <service
-            id="setono_sylius_order_edit.updated.order_updater"
-            class="Setono\SyliusOrderEditPlugin\Updated\OrderUpdater"
+            id="setono_sylius_order_edit.updater.order_updater"
+            class="Setono\SyliusOrderEditPlugin\Updater\OrderUpdater"
         >
             <argument type="service" id="setono_sylius_order_edit.preparer.order_preparer" />
             <argument type="service" id="setono_sylius_order_edit.provider.updated_order_provider" />
