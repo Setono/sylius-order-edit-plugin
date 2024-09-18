@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusOrderEditPlugin\Controller;
 
 use Setono\SyliusOrderEditPlugin\Exception\NewOrderWrongTotalException;
-use Setono\SyliusOrderEditPlugin\Updated\OrderUpdaterInterface;
+use Setono\SyliusOrderEditPlugin\Updater\OrderUpdaterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

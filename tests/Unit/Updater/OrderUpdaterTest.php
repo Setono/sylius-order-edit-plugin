@@ -15,7 +15,7 @@ use Setono\SyliusOrderEditPlugin\Event\PaidOrderUpdated;
 use Setono\SyliusOrderEditPlugin\Preparer\OrderPreparerInterface;
 use Setono\SyliusOrderEditPlugin\Processor\UpdatedOrderProcessorInterface;
 use Setono\SyliusOrderEditPlugin\Provider\UpdatedOrderProviderInterface;
-use Setono\SyliusOrderEditPlugin\Updated\OrderUpdater;
+use Setono\SyliusOrderEditPlugin\Updater\OrderUpdater;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;

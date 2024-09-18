@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusOrderEditPlugin\Updated;
+namespace Setono\SyliusOrderEditPlugin\Updater;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Setono\SyliusOrderEditPlugin\Checker\PostUpdateChangesCheckerInterface;
