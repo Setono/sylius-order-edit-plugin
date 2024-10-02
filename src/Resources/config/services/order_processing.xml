@@ -67,9 +67,7 @@
             id="setono_sylius_order_edit.order_processing.order_initial_total_processor"
             class="Setono\SyliusOrderEditPlugin\OrderProcessing\OrderInitialTotalProcessor"
             public="true"
-        >
-            <argument type="service" id="sylius.manager.order" />
-        </service>
+        />
 
         <service
             id="setono_sylius_order_edit.updater.order_updater"
