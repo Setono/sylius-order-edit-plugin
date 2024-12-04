@@ -15,6 +15,7 @@ final class OrderShowMenuSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
+        /** @psalm-suppress DeprecatedClass */
         return [OrderShowMenuBuilder::EVENT_NAME => 'addEditButton'];
     }
 
