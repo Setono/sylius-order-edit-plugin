@@ -8,6 +8,8 @@ use Setono\SyliusOrderEditPlugin\Entity\EditableOrderInterface;
 use Setono\SyliusOrderEditPlugin\Exception\OrderUpdateException;
 use Sylius\Bundle\OrderBundle\Form\Type\OrderType;
 use Sylius\Component\Core\Model\OrderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Webmozart\Assert\Assert;
@@ -30,7 +32,15 @@ final class UpdatedOrderProvider implements UpdatedOrderProviderInterface
         $form->handleRequest($request);
 
         if (!$form->isSubmitted() || !$form->isValid()) {
-            throw new OrderUpdateException();
+            /** @var FormErrorIterator<FormError> $errors */
+            $errors = $form->getErrors(true);
+
+            $error = '';
+            foreach ($errors as $err) {
+                $error .= $err->getMessage();
+            }
+
+            throw new OrderUpdateException($error);
         }
 
         $data = $form->getData();
